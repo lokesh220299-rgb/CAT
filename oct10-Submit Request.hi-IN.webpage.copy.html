@@ -1,0 +1,6399 @@
+<!-- Google Tag Manager -->
+<script>
+(function(w,d,s,l,i){
+    w[l]=w[l]||[];
+
+    w[l].push({
+        'gtm.start': new Date().getTime(),
+        event: 'gtm.js'
+    });
+
+    var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),
+        dl=l!='dataLayer' ? '&l='+l : '';
+
+    j.async=true;
+    j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+    f.parentNode.insertBefore(j,f);
+
+})(window,document,'script','dataLayer','GTM-PV4KJLLR');
+</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript>
+    <iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-PV4KJLLR"
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden">
+    </iframe>
+</noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+
+<!--Persona filter for PRODUCTS-->
+
+{% assign productPersona = 'Guest' %}
+
+{% if user %}
+  {% for role in user.roles %}
+    {% assign roleText = role | string %}
+
+    {% if roleText contains 'Cat_Internal Customer Persona Role' %}
+      {% assign productPersona = 'Internal' %}
+      {% break %}
+
+    {% elsif roleText contains 'Cat_Customer Persona Role' %}
+      {% assign productPersona = 'Customer' %}
+      {% break %}
+
+    {% elsif roleText contains 'Cat_Dealer Persona Role' %}
+      {% assign productPersona = 'Dealer' %}
+      {% break %}
+
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% assign productPersonaValue = '' %}
+
+{% case productPersona %}
+  {% when 'Customer' %}
+    {% assign productPersonaValue = 100000000 %}
+
+  {% when 'Dealer' %}
+    {% assign productPersonaValue = 100000001 %}
+
+  {% when 'Guest' %}
+    {% assign productPersonaValue = 100000002 %}
+
+  {% when 'Internal' %}
+    {% assign productPersonaValue = 100000003 %}
+{% endcase %}
+<!--Persona filter for PRODUCTS end-->
+
+ 
+<!-- Unknown product redirect: expose persona to JS for all user types -->
+
+ 
+<script>window.CAT_PERSONA_ROLE = "{{ productPersona }}";</script>
+ 
+ 
+
+{% fetchxml products %}
+<fetch>
+    <entity name="product">
+        <attribute name="productid"/>
+        <attribute name="name"/>
+        <order attribute="name" descending="false"/>
+        <filter>
+          <condition attribute="name" operator="not-null"/>
+          <condition attribute="cat_persona" operator="contain-values">
+            <value>{{ productPersonaValue }}</value>
+          </condition>
+        </filter>
+    </entity>
+</fetch>
+{% endfetchxml %}
+
+{% fetchxml dealerCommunityProducts %}
+<fetch>
+  <entity name="product">
+    <attribute name="productid" />
+    <attribute name="name" />
+    <attribute name="productnumber" />
+
+    <order
+      attribute="name"
+      descending="false"
+    />
+
+    <filter type="and">
+      <condition
+        attribute="statecode"
+        operator="eq"
+        value="0"
+      />
+
+      <filter type="or">
+        <condition
+          attribute="name"
+          operator="eq"
+          value="Aftermarket Marketing Community"
+        />
+
+        <filter type="and">
+          <condition
+            attribute="name"
+            operator="eq"
+            value="Aftermarket Sales Community"
+          />
+
+          <condition
+            attribute="productnumber"
+            operator="eq"
+            value="P-05245-B0F5X2"
+          />
+        </filter>
+
+        <condition
+          attribute="name"
+          operator="eq"
+          value="Campaign &amp; Event Management Community"
+        />
+
+        <condition
+          attribute="name"
+          operator="eq"
+          value="Prime Product Plus Community"
+        />
+      </filter>
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+
+{% fetchxml webformProductConfigurations %}
+<fetch>
+  <entity name="cat_ccs_configuration">
+    <attribute name="cat_key"></attribute>
+    <attribute name="cat_value"></attribute>
+
+    <filter type="and">
+      <condition
+        attribute="cat_key"
+        operator="in"
+      >
+        <value>WebformProductConfiguration</value>
+        <value>WebformProductConfiguration_CatForesight</value>
+        <value>WebformProductConfiguration_SOSServices</value>
+        <value>CAT_WebformProductConfiguration_OneSite</value>
+        <value>CAT_WebformProductConfiguration_DigitalAuthorization</value>
+        <value>CAT_WebformProductConfiguration_IntegratedProcurement</value>
+        <value>CAT_WebformProductConfiguration_DealerCollaborationCommunity</value>
+        <value>CAT_WebformProductConfiguration_DealerServicesPortal</value>
+        <value>CAT_WebformProductConfiguration_CatProductLink</value>
+        <value>CAT_WebformProductConfiguration_VisionLink</value>
+        <value>CAT_WebformProductConfiguration_FuelPromiseProgram</value>
+        <value>CAT_WebformProductConfiguration_EnterpriseQR</value>
+        <value>CAT_WebformProductConfiguration_SubscriptionAssetAdministration</value>
+        <value>CAT_WebformProductConfiguration_CatConvergeSuite</value>
+        <value>CAT_WebformProductConfiguration_CaterpillarCustomerAdminTool</value>
+        <value>CAT_WebformProductConfiguration_CaterpillarInsightsHub</value>
+        <value>CAT_WebformProductConfiguration_CatDealer</value>
+        {% if productPersona == 'Customer' or productPersona == 'Guest' %}
+          <value>CAT_WebformProductConfiguration_CatInspect_Customer</value>
+          <value>CAT_WebformProductConfiguration_CatRentals_Customer</value>
+          <value>CAT_WebformProductConfiguration_CatCentral_Customer</value>
+           <value>CAT_WebformProductConfiguration_CatPowerOnSite_Customer</value>
+           <value>CAT_WebformProductConfiguration_PartsCatCom_Customer</value>
+           <value>CAT_WebformProductConfiguration_SIS2Customer</value>
+           <value>CAT_WebformProductConfiguration_SIS2GO_Customer</value>
+           <value>CAT_WebformProductConfiguration_SpecSizer_Customer</value>
+        {% else %}
+        <value>CAT_WebformProductConfiguration_CatInspect_DealerInternal</value>
+        <value>CAT_WebformProductConfiguration_CatRentals_DealerInternal</value>
+        <value>CAT_WebformProductConfiguration_CatCentral_DealerInternal</value>
+        <value>CAT_WebformProductConfiguration_CatPowerOnSite_DealerInternal</value>
+        <value>CAT_WebformProductConfiguration_PartsCatCom_DealerInternal</value>
+       <value>CAT_WebformProductConfiguration_ECT_DealerInternal</value>
+       <value>CAT_WebformProductConfiguration_EnergySolutionPortal_DealerInternal</value>
+       <value>CAT_WebformProductConfiguration_SpecSizer_DealerInternal</value>
+        <value>CAT_WebformProductConfiguration_SIS2DealerInternal</value>
+        <value>CAT_WebformProductConfiguration_SIS2GO_DealerInternal</value>
+        <value>CAT_WebformProductConfiguration_SOSWeb_DealerInternal</value>
+        <value>CAT_WebformProductConfiguration_CatInteract_DealerInternal</value>
+        <value>CAT_WebformProductConfiguration_RemoteFleetVision_DealerInternal</value>
+
+        {% endif %}
+      </condition>
+
+      <condition
+        attribute="cat_type"
+        operator="eq"
+        value="100000000"
+      >
+      </condition>
+
+      <condition
+        attribute="statecode"
+        operator="eq"
+        value="0"
+      >
+      </condition>
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% fetchxml dealers %}
+<fetch>
+  <entity name="account">
+    <attribute name="accountid" />
+    <attribute name="name" />
+    <attribute name="cat_dealercode" />
+
+    <order attribute="name" descending="false" />
+
+    <filter type="and">
+      <condition attribute="statecode" operator="eq" value="0" />
+      <condition attribute="name" operator="not-null" />
+      <condition attribute="cat_dealercode" operator="not-null" />
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% fetchxml secondaryProducts %}
+<fetch>
+    <entity name="product">
+        <attribute name="productid"/>
+        <attribute name="name"/>
+        <order attribute="name" descending="false"/>
+        <filter type="and">
+          <condition attribute="name" operator="not-null"/>
+          <condition attribute="statecode" operator="eq" value="0"/>
+        </filter>
+    </entity>
+</fetch>
+{% endfetchxml %}
+
+{% fetchxml fuelPromiseRoutingProducts %}
+<fetch>
+  <entity name="product">
+    <attribute name="productid" />
+    <attribute name="name" />
+
+    <filter type="and">
+      <condition
+        attribute="statecode"
+        operator="eq"
+        value="0"
+      />
+
+      <filter type="or">
+        <condition
+          attribute="name"
+          operator="eq"
+          value="Other"
+        />
+
+        <condition
+          attribute="name"
+          operator="eq"
+          value="Other - Other"
+        />
+      </filter>
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% fetchxml convergeSecondaryProducts %}
+<fetch>
+  <entity name="product">
+    <attribute name="productid" />
+    <attribute name="name" />
+
+    <filter type="and">
+      <condition
+        attribute="statecode"
+        operator="eq"
+        value="0"
+      />
+
+      <condition
+        attribute="name"
+        operator="in"
+      >
+        <value>Customer Insights</value>
+        <value>Finance</value>
+        <value>Sales</value>
+        <value>Service</value>
+      </condition>
+    </filter>
+    <order attribute="createdon" descending="false"/>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% fetchxml customerAdminSecondaryProducts %}
+<fetch>
+  <entity name="product">
+    <attribute name="productid" />
+    <attribute name="name" />
+
+    <filter type="and">
+      <condition attribute="statecode" operator="eq" value="0" />
+
+      <condition attribute="name" operator="in">
+        <value>Asset Management Module</value>
+        <value>Customer Management Module</value>
+        <value>Manage Module</value>
+        <value>User Onboarding Module</value>
+        <value>Asset Management Module - Caterpillar Customer Admin Tool</value>
+        <value>Customer Management Module - Caterpillar Customer Admin Tool</value>
+        <value>Manage Module - Dealer Admin - Caterpillar Customer Admin Tool</value>
+        <value>User Onboarding Module - Caterpillar Customer Admin Tool</value>
+        <value>Subscription and Asset Management</value>
+        <value>Subscription and Asset Administration</value>
+        <value>Asset Administration</value>
+        <value>Data Issue</value>
+      </condition>
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% fetchxml insightsHubDataIssueProduct %}
+<fetch top="1">
+  <entity name="product">
+    <attribute name="productid" />
+    <attribute name="name" />
+    <attribute name="productnumber" />
+
+    <filter type="and">
+      <condition attribute="statecode" operator="eq" value="0" />
+      <condition attribute="productnumber" operator="eq" value="P-05390-F7P9Y8" />
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% fetchxml webLanguages %}
+<fetch top="1">
+  <entity name="cat_ccs_configuration">
+    <attribute name="cat_key" />
+    <attribute name="cat_value" />
+    <filter type="and">
+      <condition attribute="statecode" operator="eq" value="0" />
+      <condition attribute="cat_key" operator="eq" value="CAT_Web_Languages" />
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+<!-- language part start -->
+
+<div id="catWebLanguagesSource" style="display:none;" aria-hidden="true"
+     data-code="{{ website.selected_language.code | downcase | escape }}">
+  {% for cfg in webLanguages.results.entities %}
+    <textarea class="cat-web-languages-record">{{ cfg.cat_value | escape }}</textarea>
+  {% endfor %}
+</div>
+
+<script>
+function getCatLanguageLcid() {
+    var FALLBACK = 1033;
+    var source = document.getElementById("catWebLanguagesSource");
+    var record = source && source.querySelector(".cat-web-languages-record");
+    if (!record) return FALLBACK;
+    var list;
+    try { list = JSON.parse((record.value || "").trim() || "[]"); }
+    catch (e) { console.error("CAT: Invalid CAT_Web_Languages JSON", e); return FALLBACK; }
+    function find(code) {
+        for (var i = 0; i < list.length; i++) {
+            if (String(list[i].Code || "").trim().toLowerCase() === code) {
+                return Number(list[i].LocalID) || null;
+            }
+        }
+        return null;
+    }
+    var code = (source.getAttribute("data-code") || "").trim().toLowerCase();
+    return find(code) || find("en-us") || FALLBACK;
+}
+</script>
+
+
+<!-- URL Parameter fetching code start -->
+
+{% fetchxml urlParamCfg %}
+<fetch top="1">
+  <entity name="cat_ccs_configuration">
+    <attribute name="cat_key" />
+    <attribute name="cat_value" />
+    <filter type="and">
+      <condition attribute="statecode" operator="eq" value="0" />
+      <condition attribute="cat_key" operator="eq" value="CAT_Web_HelpCenter_URL_Parameters" />
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+<div id="catUrlParamSource" style="display:none;" aria-hidden="true">
+  {% for cfg in urlParamCfg.results.entities %}
+    <textarea class="cat-url-param-config">{{ cfg.cat_value | escape }}</textarea>
+  {% endfor %}
+</div>
+<script>
+window.CatUrlParams = (function () {
+    var PENDING_KEY = "catPendingUrlParams";
+    var DEALER_NAME_ENABLED = false;   // Dealer Name is switched off for now. Change to true later to save it too.
+    var cfgCache;
+
+    // "User State", "UserState" and "user_state" all become "userstate"
+    function norm(v) { return String(v == null ? "" : v).toLowerCase().replace(/[^a-z0-9]/g, ""); }
+    // trim + collapse spaces + lower case (used to compare dealer names and codes)
+    function same(v) { return String(v == null ? "" : v).replace(/\s+/g, " ").trim().toLowerCase(); }
+    function clip(v, max) { v = String(v == null ? "" : v); return (max && v.length > max) ? v.substring(0, max) : v; }
+    function writeJson(key, obj) { try { sessionStorage.setItem(key, JSON.stringify(obj)); } catch (e) {} }
+
+    function getConfig() {
+        if (cfgCache !== undefined) { return cfgCache; }
+        cfgCache = null;
+        var el = document.querySelector("#catUrlParamSource .cat-url-param-config");
+        if (!el) { console.warn("CAT: URL parameter config row was not found on this page."); return cfgCache; }
+        try {
+            var parsed = JSON.parse(String(el.value || el.textContent || "").trim());
+            if (parsed && parsed.targets && Array.isArray(parsed.parameters)) { cfgCache = parsed; }
+            else { console.warn("CAT: URL parameter config has no targets or parameters."); }
+        } catch (e) { console.error("CAT: URL parameter config is not valid JSON.", e); }
+        return cfgCache;
+    }
+
+    // Everything the site already keeps in sessionStorage (key "User State" -> value "LoggedIn")
+    function readSession() {
+        var map = {};
+        try {
+            for (var i = 0; i < sessionStorage.length; i++) {
+                var key = sessionStorage.key(i);
+                var val = sessionStorage.getItem(key);
+                if (val !== null && String(val).trim() !== "") { map[norm(key)] = String(val).trim(); }
+            }
+        } catch (e) {}
+        return map;
+    }
+
+    // Parameters that are in the address bar right now (only if the page was opened with them)
+    function readUrl() {
+        var map = {};
+        try {
+            new URLSearchParams(window.location.search).forEach(function (v, k) {
+                if (String(v).trim() !== "") { map[norm(k)] = String(v).trim(); }
+            });
+        } catch (e) {}
+        return map;
+    }
+
+    // Finds a dealer account on the page: OOB form list first, then the custom form dealer list
+    function findDealerId(matchColumn, value) {
+        var wanted = same(value);
+        if (!wanted) { return ""; }
+        var rows = [];
+        document.querySelectorAll(".oob-dealer-record").forEach(function (n) {
+            rows.push({ id: n.getAttribute("data-dealer-id"), name: n.getAttribute("data-dealer-name"), code: n.getAttribute("data-dealer-code") });
+        });
+        if (!rows.length) {
+            document.querySelectorAll("#dealer option").forEach(function (o) {
+                if (o.value) { rows.push({ id: o.value, name: o.textContent, code: o.getAttribute("data-code") }); }
+            });
+        }
+        var col = same(matchColumn || "name");
+        for (var i = 0; i < rows.length; i++) {
+            var candidate = (col === "cat_dealercode") ? rows[i].code : (col === "accountid" ? rows[i].id : rows[i].name);
+            if (same(candidate) === wanted) { return String(rows[i].id || "").replace(/[{}]/g, ""); }
+        }
+        return "";
+    }
+
+    // Reads the config + sessionStorage and works out the value for every target
+    function collect() {
+        var out = {
+            configLoaded: false, column: "cat_technicaldetails", separator: "\n", maxLength: 2000,
+            matched: [], notFound: [], textFields: {}, dealer: null, asset: null, text: ""
+        };
+        var cfg = getConfig();
+        if (!cfg) { return out; }
+        out.configLoaded = true;
+
+        var targets = cfg.targets || {};
+        var td = targets.technicalDetails || {};
+        var defaultTarget = cfg.defaultTarget || "technicalDetails";
+        var lineFormat = td.lineFormat || "{label}: {value}";
+        out.column = td.column || out.column;
+        out.separator = (td.separator !== undefined) ? td.separator : "\n";
+        out.maxLength = td.maxLength || 2000;
+
+        var session = readSession();
+        var url = readUrl();
+        var lines = [], fallbacks = [], done = {};
+
+        function line(label, value) { return lineFormat.replace(/\{label\}/g, label).replace(/\{value\}/g, value); }
+
+        cfg.parameters.forEach(function (p) {
+            var key = p.target || defaultTarget;
+            var t = targets[key];
+            if (!t) { return; }
+            if (t.type === "lookup" && !DEALER_NAME_ENABLED) { return; }   // Dealer Name switched off
+
+            var label = p.label || p.name;
+            var value = "", from = "";
+            if (url[norm(p.name)]) { value = url[norm(p.name)]; from = "url"; }
+            else if (session[norm(label)]) { value = session[norm(label)]; from = "session (" + label + ")"; }
+            else if (session[norm(p.name)]) { value = session[norm(p.name)]; from = "session (" + p.name + ")"; }
+
+            if (!value) { out.notFound.push(label); return; }
+            out.matched.push({ label: label, value: value, to: key, from: from });
+
+            if (t.type === "multilineText") { lines.push(line(label, value)); return; }
+            if (done[key]) { return; }                               // first parameter with a value wins
+
+            if (t.type === "text") {
+                done[key] = true;
+                out.textFields[t.column] = clip(value, t.maxLength);
+            } else if (t.type === "lookup") {
+                var id = findDealerId(p.matchColumn, value);
+                if (id) {
+                    done[key] = true;
+                    out.dealer = { navigationProperty: t.navigationProperty, entitySet: t.lookupEntitySet || "accounts", id: id };
+                } else if (t.onNoMatch === "technicalDetails") {
+                    fallbacks.push({ key: key, text: line(label, value) });
+                }
+            } else if (t.type === "choice") {
+                var map = t.valueMap || {};
+                var k = same(value);
+                if (Object.prototype.hasOwnProperty.call(map, k)) {
+                    done[key] = true;
+                    out.asset = {
+                        column: t.column, value: map[k], entitySet: t.entitySet || "cat_assets",
+                        parentNavigationProperty: t.parentNavigationProperty || "cat_case", mode: t.ifNoAssetForCase || "skip"
+                    };
+                } else if (t.onNoMatch === "technicalDetails") {
+                    fallbacks.push({ key: key, text: line(label, value) });
+                }
+            }
+        });
+
+        // a value that could not be matched goes to Technical Details, unless another parameter matched that target
+        fallbacks.forEach(function (f) { if (!done[f.key]) { lines.push(f.text); } });
+
+        out.text = clip(lines.join(out.separator), out.maxLength);
+        return out;
+    }
+
+    // CUSTOM form: add everything to the case payload (values the user already entered on the form win)
+    function applyToCasePayload(data) {
+        var r = collect();
+        if (!r.configLoaded) { return; }
+
+        if (r.text) {
+            var existing = String(data[r.column] || "").trim();
+            data[r.column] = clip(existing ? existing + r.separator + r.text : r.text, r.maxLength);
+        }
+        Object.keys(r.textFields).forEach(function (col) {
+            if (!String(data[col] || "").trim()) { data[col] = r.textFields[col]; }
+        });
+        if (r.dealer) {
+            var bind = r.dealer.navigationProperty + "@odata.bind";
+            var current = same(data[bind]);
+            var defEl = document.getElementById("catDealerDefaultId");
+            var def = same(defEl ? defEl.value : "");
+            // the URL dealer replaces the automatic default dealer, never a dealer the user chose
+            if (!current || (def && current.indexOf(def) > -1)) {
+                data[bind] = "/" + r.dealer.entitySet + "(" + r.dealer.id + ")";
+            }
+        }
+        writeJson(PENDING_KEY, { t: Date.now(), asset: r.asset });
+        console.log("CAT: URL parameters added to the case:", { technicalDetails: r.text, textFields: r.textFields, dealer: r.dealer, asset: r.asset });
+    }
+
+    // OOB form: keep everything until the Case Summary page can save it on the new case
+    function savePendingForSummary() {
+        var r = collect();
+        try {
+            var fields = {};
+            if (r.text) { fields[r.column] = r.text; }
+            Object.keys(r.textFields).forEach(function (col) { fields[col] = r.textFields[col]; });
+
+            var formDealer = document.getElementById("cat_dealername");
+            if (r.dealer && !(formDealer && formDealer.value)) {
+                fields[r.dealer.navigationProperty + "@odata.bind"] = "/" + r.dealer.entitySet + "(" + r.dealer.id + ")";
+            }
+            if (Object.keys(fields).length === 0 && !r.asset) { sessionStorage.removeItem(PENDING_KEY); return; }
+            writeJson(PENDING_KEY, { t: Date.now(), caseFields: fields, asset: r.asset });
+            console.log("CAT: URL parameters saved for the Case Summary page:", fields, r.asset);
+        } catch (e) { console.error("CAT: URL parameters could not be saved for the summary page", e); }
+    }
+
+    // Removes only this feature's temporary key (the site's own sessionStorage values are never touched)
+    function clear() {
+        try { sessionStorage.removeItem(PENDING_KEY); } catch (e) {}
+    }
+
+    // Type CatUrlParams.debug() in the browser Console to see exactly what was found
+    function debug() {
+        var r = collect();
+        console.log("Config loaded:", r.configLoaded);
+        console.log("Found:", r.matched);
+        console.log("Not found:", r.notFound);
+        console.log("Technical Details text:\n" + r.text);
+        console.log("Case text columns:", r.textFields);
+        console.log("Dealer Name lookup:", r.dealer);
+        console.log("Provided Prime Product Family (asset):", r.asset);
+        return r;
+    }
+
+    return { applyToCasePayload: applyToCasePayload, savePendingForSummary: savePendingForSummary, clear: clear, debug: debug };
+})();
+</script>
+
+{% assign is_anonymous_user = false %}
+
+{% if user.id == null %}
+    {% assign is_anonymous_user = true %}
+{% endif %}
+
+<div class="cat-layout">
+<!-- LEFT PANEL: FORM -->
+<div class="cat-left-panel">
+{% if is_anonymous_user %}
+
+<div class="row sectionBlockLayout text-start" style="display: flex; flex-wrap: wrap; margin: 0px; min-height: auto; padding: 8px;">
+  <div class="container" style="display: flex; flex-wrap: wrap; width: 50vw;">
+
+    <div id="catUserSeedData" style="display:none;">
+    <input type="hidden" id="seedFirstName" value="{{ user.firstname | escape }}" />
+    <input type="hidden" id="seedLastName" value="{{ user.lastname | escape }}" />
+    <input type="hidden" id="seedEmail" value="{{ user.emailaddress1 | escape }}" />
+    <input type="hidden" id="seedCountry" value="{{ user.address1_country | escape }}" />
+    <input type="hidden" id="seedState" value="{{ user.address1_stateprovince | escape }}" />
+    <input type="hidden" id="seedCity" value="{{ user.address1_city | escape }}" />
+  </div>
+    <div id="catSeedData" style="display:none;">
+    <input type="hidden" id="seedIsAuthenticated" value="{% if user %}true{% else %}false{% endif %}" />
+    <input type="hidden" id="seedContactId" value="{{ user.id | escape }}" />
+    <input type="hidden" id="seedContactName" value="{{ user.fullname | escape }}" />
+    </div>
+
+<div id="oobAllowedProducts" style="display:none;">
+  {% for p in products.results.entities %}
+    <span
+      data-product-id="{{ p.productid }}"
+      data-product-name="{{ p.name | escape }}"
+    ></span>
+  {% endfor %}
+</div>
+
+
+{% fetchxml oobProductConfigurations %}
+<fetch>
+  <entity name="cat_ccs_configuration">
+    <attribute name="cat_key" />
+    <attribute name="cat_value" />
+
+    <filter type="and">
+      <condition
+        attribute="statecode"
+        operator="eq"
+        value="0"
+      />
+
+      <condition
+        attribute="cat_key"
+        operator="in"
+      >
+        <value>CAT_WebformProductConfiguration_CatProductLink</value>
+        <value>CAT_WebformProductConfiguration_VisionLink</value>
+        <value>CAT_WebformProductConfiguration_CatRentals_Customer</value>
+        <value>CAT_WebformProductConfiguration_FuelPromiseProgram</value>
+        <value>CAT_WebformProductConfiguration_SIS2Customer</value>
+        <value>CAT_WebformProductConfiguration_CatInspect_Customer</value>
+        <value>CAT_WebformProductConfiguration_CatCentral_Customer</value>
+        <value>CAT_WebformProductConfiguration_SIS2GO_Customer</value>
+
+      </condition>
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% fetchxml oobFuelPromiseRoutingProducts %}
+<fetch>
+  <entity name="product">
+    <attribute name="productid" />
+    <attribute name="name" />
+
+    <filter type="and">
+      <condition
+        attribute="statecode"
+        operator="eq"
+        value="0"
+      />
+
+      <filter type="or">
+        <condition
+          attribute="name"
+          operator="eq"
+          value="Other"
+        />
+
+        <condition
+          attribute="name"
+          operator="eq"
+          value="Other - Other"
+        />
+      </filter>
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% fetchxml oobCatInspectSecondaryProducts %}
+<fetch>
+  <entity name="product">
+    <attribute name="productid" />
+    <attribute name="name" />
+
+    <filter type="and">
+      <condition
+        attribute="statecode"
+        operator="eq"
+        value="0"
+      />
+
+      <condition
+        attribute="name"
+        operator="in"
+      >
+        <value>Cat® Inspect Mobile</value>
+        <value>Cat® Inspect Web</value>
+      </condition>
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+<div
+  id="oobProductConfigurationSource"
+  style="display:none;"
+  aria-hidden="true"
+>
+  {% for configuration in oobProductConfigurations.results.entities %}
+    <textarea
+      class="oob-product-configuration-record"
+      data-configuration-key="{{ configuration.cat_key | escape }}"
+    >{{ configuration.cat_value | escape }}</textarea>
+  {% endfor %}
+</div>
+
+
+<div
+  id="oobFuelPromiseRoutingSource"
+  style="display:none;"
+  aria-hidden="true"
+>
+  {% for product in oobFuelPromiseRoutingProducts.results.entities %}
+    <span
+      class="oob-fuel-promise-routing-product"
+      data-product-id="{{ product.productid | escape }}"
+      data-product-name="{{ product.name | escape }}"
+    ></span>
+  {% endfor %}
+
+  <span
+    id="oobFuelPromiseAdditionalApplication"
+    data-record-id="9f6a6b38-3497-f111-8076-00224804a04f"
+    data-record-name="Fuel Promise Program"
+  ></span>
+</div>
+
+<div
+  id="oobCatInspectSecondaryProductSource"
+  style="display:none;"
+  aria-hidden="true"
+>
+  {% for product in oobCatInspectSecondaryProducts.results.entities %}
+    <span
+      class="oob-cat-inspect-secondary-product"
+      data-product-id="{{ product.productid | escape }}"
+      data-product-name="{{ product.name | escape }}"
+    ></span>
+  {% endfor %}
+</div>
+
+<div
+  id="oobDealerSource"
+  style="display:none;"
+  aria-hidden="true"
+>
+  {% for dealer in dealers.results.entities %}
+    <span
+      class="oob-dealer-record"
+      data-dealer-id="{{ dealer.accountid | escape }}"
+      data-dealer-name="{{ dealer.name | escape }}"
+      data-dealer-code="{{ dealer.cat_dealercode | escape }}"
+    ></span>
+  {% endfor %}
+</div>
+
+{% entityform name: 'CAT Web - Submit Request' %}</div>
+
+    
+  </div>
+</div>
+
+{% else %}
+
+{% assign is_persona_user = false %}
+
+{% if user.roles contains "Cat_Dealer Persona Role" or user.roles contains "Cat_Customer Persona Role" or user.roles contains "Cat_Internal Customer Persona Role" %}
+{% assign is_persona_user = true %}
+{% endif %}
+
+
+
+  <div class="cat-form-wrapper">
+<input type="hidden" id="catPersonaFlag" value="{{ productPersona }}" />
+
+<!-- AFTER -->
+<h2 class="cat-form-title">Cat® Customer Support Request</h2>
+
+            <div id="customValidationBox" class="cat-validation-box" style="display:none;">
+</div>
+
+<div
+  id="fuelPromiseRoutingSource"
+  style="display:none;"
+  aria-hidden="true"
+>
+  {% for product in fuelPromiseRoutingProducts.results.entities %}
+    <span
+      class="fuel-promise-routing-product"
+      data-product-id="{{ product.productid | escape }}"
+      data-product-name="{{ product.name | escape }}"
+    ></span>
+  {% endfor %}
+</div>
+
+<div
+  id="convergeSecondaryProductSource"
+  style="display:none;"
+  aria-hidden="true"
+>
+  {% for product in convergeSecondaryProducts.results.entities %}
+    <span
+      class="converge-secondary-product"
+      data-product-id="{{ product.productid | escape }}"
+      data-product-name="{{ product.name | escape }}"
+    ></span>
+  {% endfor %}
+</div>
+
+<div
+  id="customerAdminSecondaryProductSource"
+  style="display:none;"
+  aria-hidden="true"
+>
+  {% for product in customerAdminSecondaryProducts.results.entities %}
+    <span
+      class="customer-admin-secondary-product"
+      data-product-id="{{ product.productid | escape }}"
+      data-product-name="{{ product.name | escape }}"
+    ></span>
+  {% endfor %}
+</div>
+
+<div
+  id="insightsHubDataIssueSource"
+  style="display:none;"
+  aria-hidden="true"
+>
+  {% for product in insightsHubDataIssueProduct.results.entities %}
+    <span
+      class="insights-hub-data-issue-product"
+      data-product-id="{{ product.productid | escape }}"
+      data-product-name="{{ product.name | escape }}"
+    ></span>
+  {% endfor %}
+</div>
+
+<div
+  id="catProductFormConfigurations"
+  style="display:none;"
+  aria-hidden="true"
+>
+  {% for config in webformProductConfigurations.results.entities %}
+    <textarea
+      class="cat-product-config-record"
+      data-config-key="{{ config.cat_key | escape }}"
+    >{{ config.cat_value | escape }}</textarea>
+  {% endfor %}
+</div>
+
+<div
+  id="digitalMarketplaceRedirectModal"
+  class="marketplace-redirect-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-describedby="digitalMarketplaceRedirectMessage"
+  aria-hidden="true"
+>
+  <div class="marketplace-redirect-dialog">
+    <p id="digitalMarketplaceRedirectMessage">
+      You are being redirected to the Cat® Digital Marketplace / APIs Webform
+    </p>
+
+    <button
+      type="button"
+      id="digitalMarketplaceRedirectButton"
+      class="marketplace-redirect-button"
+    >
+      Okay
+    </button>
+  </div>
+</div>
+
+<!-- Custom form localized translations -->
+<!-- Custom form localized translations -->
+<textarea
+    id="catCustomFormTranslationsRaw"
+    style="display:none;"
+    aria-hidden="true"
+>{{ snippets["CAT_CustomForm_Translations"] | escape }}</textarea>
+
+<script>
+window.CAT_CUSTOM_I18N_RAW =
+    document.getElementById(
+        "catCustomFormTranslationsRaw"
+    ).value.trim() || "{}";
+</script>
+
+            <form id="catSupportForm" class="cat-form" novalidate>
+
+   <!-- Product Technology (LOOKUP) -->
+  <div class="cat-field">
+  <label for="productTech">What product are you submitting a support case for?<span class="req">*</span></label>
+
+  <div class="lookup-wrapper">
+     <input type="text" id="productInput" class="lookup-input" placeholder="Select Product" required>
+<div class="lookup-arrow"><i class="fa fa-chevron-down"></i></div>
+
+      <div class="lookup-results" id="productResults"></div>
+
+      <select id="productTech" name="productid" style="display:none;">
+          <option value="">Select Product</option>
+          {% for p in products.results.entities %}
+            {% unless p.name == "" %}
+              <option value="{{ p.productid }}">{{ p.name }}</option>
+            {% endunless %}
+          {% endfor %}
+      </select>
+  </div>
+  </div>
+
+
+
+    <!-- First Name -->
+    
+   <!-- <div class="cat-field">
+<label for="firstName" type="hidden" >First Name <span class="req">*</span></label>
+      <input type="text" id="firstName" name="firstname"
+             value="{{ user.firstname }}" 
+             
+             {% if is_persona_user and user.firstname %} readonly {% endif %} required /> -->
+
+<div class="cat-field cat-field-hidden">
+
+  <input 
+    type="hidden"
+      id="firstName"
+      name="firstname"
+      value="{{ user.firstname }}"
+      required
+  />
+
+    </div>
+
+    <!-- Last Name -->
+    <div class="cat-field cat-field-hidden">
+      <!-- <label for="lastName">Last Name <span class="req">*</span></label>
+      <input type="text" id="lastName" name="lastname"
+             value="{{ user.lastname }}" 
+             {% if is_persona_user and user.lastname %} readonly {% endif %} required /> -->
+
+      <input 
+      type="hidden"
+      id="lastName"
+      name="lastname"
+      value="{{ user.lastname }}"
+      required
+  />
+    </div>
+
+    <!-- Email -->
+    <div class="cat-field cat-field-hidden">
+      <!-- <label for="email">Email <span class="req">*</span></label>
+      <input type="email" id="email" name="emailaddress1"
+             value="{{ user.emailaddress1 }}"
+              {% if is_persona_user and user.emailaddress1 %} readonly {% endif %} required /> -->
+      <input 
+      type="hidden"
+      id="email"
+      name="emailaddress1"
+      value="{{ user.emailaddress1 }}"
+      required
+  />
+    </div>
+
+  <!--dealer name-->
+<div class="cat-field">
+  <label for="dealerInput">Dealer Name</label>
+
+  <div class="lookup-wrapper">
+      <input type="text" id="dealerInput" class="lookup-input" placeholder="Select Dealer">
+
+      <div class="lookup-arrow dealer-arrow"><i class="fa fa-chevron-down"></i></div>
+      <div class="lookup-results" id="dealerResults"></div>
+
+   <select id="dealer" name="cat_dealername" style="display:none;">
+          <option value="">Select Dealer</option>
+          {% assign dealerMatchFound = false %}
+          {% for d in dealers.results.entities %}
+            {% if d.accountid == user.parentcustomerid.id %}
+              {% assign dealerMatchFound = true %}
+            {% endif %}
+    <option value="{{ d.accountid }}">{{ d.name }}</option>
+          {% endfor %}
+          {% if user.parentcustomerid.id and dealerMatchFound == false %}
+            <option value="{{ user.parentcustomerid.id }}">{{ user.parentcustomerid.name | escape }}</option>
+          {% endif %}
+      </select>
+
+      <input type="hidden" id="catDealerDefaultId" value="{{ user.parentcustomerid.id }}" />
+      <input type="hidden" id="catDealerDefaultName" value="{{ user.parentcustomerid.name | escape }}" />
+  </div>
+</div>
+
+
+
+    <!-- Country -->
+    <div class="cat-field cat-field-hidden">
+      <!-- <label for="country">Country <span class="req">*</span></label> -->
+      <!--<select id="country" name="address1_country" required>
+        <option value="">-- None --</option>
+        {% for c in countries %}
+          <option value="{{ c.name }}">{{ c.name }}</option>
+        {% endfor %}
+      </select>-->
+
+      <!-- <input type="text" id="country" name="address1_country"
+             value="{{ user.address1_country }}"            
+            {% if is_persona_user and user.address1_country %} readonly {% endif %}
+             required /> -->
+              <input 
+      type="hidden"
+      id="country"
+      name="address1_country"
+      value="{{ user.address1_country }}"
+      {% if user.address1_country %} readonly {% endif %}
+      required
+  />
+    </div>
+
+    <!-- CWS ID -->
+    <div class="cat-field cat-field-hidden">
+      <!-- <label for="cwsid">CWS ID <span class="req">*</span></label>
+      <input type="text" id="cwsid" name="cat_cwsid"
+             value="{{ user.cat_cwsid }}" 
+             {% if is_persona_user and user.cat_cwsid %} readonly {% endif %} required /> -->
+              <input 
+      type="hidden"
+      id="cwsid"
+      name="cat_cwsid"
+      value="{{ user.cat_cwsid }}"
+      {% if user.cat_cwsid %} readonly {% endif %}
+      required
+  />
+    </div>
+
+    <!-- State/Province -->
+    <div class="cat-field cat-field-hidden">
+      <input 
+      type="hidden"
+      id="state"
+      name="address1_stateorprovince"
+      value="{{ user.address1_stateorprovince }}"
+  />
+    </div>
+
+    <!-- City -->
+    <div class="cat-field cat-field-hidden">
+      <input 
+      type="hidden"
+      id="city"
+      name="address1_city"
+      value="{{ user.address1_city }}"
+  />
+    </div>
+
+    <!-- Phone -->
+    <div class="cat-field cat-field-hidden">
+      <!-- <label for="phone">Phone <span class="req">*</span></label>
+      <input type="tel" id="phone" name="address1_telephone1"
+             value="{{ user.address1_telephone1 }}" 
+             {% if is_persona_user and user.address1_telephone1 %} readonly {% endif %} required /> -->
+                <input 
+      type="hidden"
+      id="phone"
+      name="address1_telephone1"
+      value="{{ user.address1_telephone1 }}"
+      {% if user.address1_telephone1 %} readonly {% endif %}
+      required
+  />
+    </div>
+
+
+ <!-- Subject -->
+    <div class="cat-field">
+      <label for="subject">Subject</label>
+      <input type="text" id="subject" name="title"
+             placeholder="Optional" />
+    </div>
+
+    <!-- Add Additional Emails -->
+    <div class="cat-field">
+      <a href="#" id="addAdditionalEmailsLink" class="cat-additional-emails-link">Add additional emails</a>
+    </div>
+
+    <div id="additionalEmailsWrapper" style="display:none;">
+      <div class="cat-field">
+        <label for="additionalEmail1">Additional Email 1</label>
+        <input type="email" id="additionalEmail1" placeholder="Optional" />
+      </div>
+      <div class="cat-field">
+        <label for="additionalEmail2">Additional Email 2</label>
+        <input type="email" id="additionalEmail2" placeholder="Optional" />
+      </div>
+    </div>
+
+  
+    <!-- Product 
+    <div class="cat-field">
+      <label for="product">What product are you submitting a support case for? <span class="req">*</span></label>
+      <select id="product" name="productid" required>
+        <option value="">Select Product</option>
+        {% for p in products.results.entities %}
+          <option value="{{ p.productid }}">{{ p.name }}</option>
+        {% endfor %}
+      </select>
+    </div>-->
+
+      <!-- Are you submitting on behalf of another user? — only shown when "Cat Foresight" is selected -->
+  <div class="cat-field" id="onBehalfFieldWrapper">
+    <label for="onBehalfInput">Are you submitting on behalf of another user?</label>
+
+    <div class="lookup-wrapper">
+      <input type="text" id="onBehalfInput" class="lookup-input" placeholder="Select Option">
+      <div class="lookup-arrow onbehalf-arrow"><i class="fa fa-chevron-down"></i></div>
+
+      <div class="lookup-results" id="onBehalfResults"></div>
+
+      <select id="onBehalfSelect" name="cat_onbehalfofanotheruser" style="display:none;">
+          <option value="">Select Option</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+      </select>
+    </div>
+  </div>
+
+<!-- Dealer Services Portal impact fields -->
+<div class="cat-field" id="dspImpactFieldsWrapper">
+  <div class="cat-checkbox-group">
+
+    <label class="cat-checkbox-option">
+      <input
+        type="checkbox"
+        id="dspTechOnSiteInput"
+        name="dspTechOnSite"
+        value="Yes"
+      />
+      <span>I am a Tech on Site</span>
+    </label>
+
+    <label class="cat-checkbox-option">
+      <input
+        type="checkbox"
+        id="dspMultipleUsersInput"
+        name="dspMultipleUsers"
+        value="Yes"
+      />
+      <span>This is impacting multiple users</span>
+    </label>
+
+    <label class="cat-checkbox-option">
+      <input
+        type="checkbox"
+        id="dspMultipleAssetsInput"
+        name="dspMultipleAssets"
+        value="Yes"
+      />
+      <span>This is impacting multiple assets</span>
+    </label>
+
+  </div>
+</div>
+
+<!-- Cat Product Link fields shown before Issue Type -->
+
+<!-- Asset ID/Serial Number -->
+<div class="cat-field" id="productLinkSerialNumberFieldWrapper">
+  <label for="productLinkSerialNumberInput">
+    Asset ID/Serial Number
+  </label>
+
+  <textarea
+    id="productLinkSerialNumberInput"
+    name="cat_productlinkserialnumbers"
+    rows="3"
+    maxlength="1000"
+    placeholder="Enter one or more serial numbers"
+  ></textarea>
+</div>
+
+<!-- Product Link Device Serial Number -->
+<div
+  class="cat-field"
+  id="productLinkDeviceSerialFieldWrapper"
+>
+  <label for="productLinkDeviceSerialInput">
+    Product Link Device Serial Number
+  </label>
+
+  <input
+    type="text"
+    id="productLinkDeviceSerialInput"
+    name="cat_productlinkdeviceserial"
+    maxlength="100"
+    placeholder="Optional"
+  />
+</div>
+
+<!-- Cat Product Link impact options -->
+<div class="cat-field" id="productLinkImpactFieldsWrapper">
+  <div class="cat-checkbox-group">
+
+    <label class="cat-checkbox-option">
+      <input
+        type="checkbox"
+        id="productLinkTechOnSiteInput"
+        name="productLinkTechOnSite"
+        value="Yes"
+      />
+      <span>I am a Tech on Site</span>
+    </label>
+
+    <label class="cat-checkbox-option">
+      <input
+        type="checkbox"
+        id="productLinkMultipleAssetsInput"
+        name="productLinkMultipleAssets"
+        value="Yes"
+      />
+      <span>Impacting Multiple Assets</span>
+    </label>
+
+  </div>
+</div>
+
+<!-- Industry -->
+<div class="cat-field" id="productLinkIndustryFieldWrapper">
+  <label for="productLinkIndustryInput">
+    Industry
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="productLinkIndustryInput"
+      class="lookup-input"
+      placeholder="Select Industry"
+    />
+
+    <div class="lookup-arrow product-link-industry-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="productLinkIndustryResults"
+    ></div>
+
+    <select
+  id="productLinkIndustrySelect"
+  name="productLinkIndustry"
+  style="display:none;"
+>
+  <option value="">
+    Select Industry
+  </option>
+
+  <option value="Construction">
+    Construction
+  </option>
+
+  <option value="Electrification">
+    Electrification
+  </option>
+
+  <option value="Marine">
+    Marine
+  </option>
+
+  <option value="Mining">
+    Mining
+  </option>
+</select>
+  </div>
+</div>
+
+<!-- VisionLink Tech on Site -->
+<div
+  class="cat-field"
+  id="visionLinkTechOnSiteFieldWrapper"
+>
+  <div class="cat-checkbox-group">
+    <label class="cat-checkbox-option">
+      <input
+        type="checkbox"
+        id="visionLinkTechOnSiteInput"
+        name="visionLinkTechOnSite"
+        value="Yes"
+      />
+      <span>I am a Tech on Site</span>
+    </label>
+  </div>
+</div>
+
+<!-- S•O•S WEB CONDITIONAL FIELDS (Dealer / Internal) -->
+<div class="cat-field" id="sosWebCcidFieldWrapper">
+  <label for="sosWebCcidInput">CCID</label>
+  <input type="text" id="sosWebCcidInput" maxlength="100" />
+</div>
+
+{% unless productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- =====================================================
+     CAT REMOTE FLEET VISION - ALWAYS SHOWN (Dealer/Internal)
+===================================================== -->
+
+<!-- Industry -->
+<div class="cat-field" id="rfvIndustryFieldWrapper">
+  <label for="rfvIndustryInput">Industry</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="rfvIndustryInput" class="lookup-input" placeholder="Select Industry" autocomplete="off" />
+    <div class="lookup-arrow rfv-industry-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="rfvIndustryResults"></div>
+    <select id="rfvIndustrySelect" style="display:none;">
+      <option value="">Select Industry</option>
+      <option value="100000001">IPSD</option>
+      <option value="100000002">Marine</option>
+      <option value="100000003">Oil &amp; Gas</option>
+      <option value="100000004">Rail</option>
+      <option value="100000005">Services</option>
+    </select>
+  </div>
+</div>
+
+<!-- DCN -->
+<div class="cat-field" id="rfvDcnFieldWrapper">
+  <label for="rfvDcnInput">DCN</label>
+  <input type="text" id="rfvDcnInput" placeholder="Enter DCN" maxlength="100" />
+</div>
+
+<!-- CCID -->
+<div class="cat-field" id="rfvCcidFieldWrapper">
+  <label for="rfvCcidInput">CCID</label>
+  <input type="text" id="rfvCcidInput" placeholder="Enter CCID" maxlength="100" />
+</div>
+{% endunless %}
+
+{% unless productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- Are you submitting a case on behalf of another user? -->
+<div class="cat-field" id="rentalsDealerOnBehalfFieldWrapper">
+  <label>Are you submitting a case on behalf of another user?</label>
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input type="radio" name="rentalsDealerOnBehalf" id="rentalsDealerOnBehalfYes" value="Yes" />
+      <span>Yes</span>
+    </label>
+    <label class="cat-radio-option">
+      <input type="radio" name="rentalsDealerOnBehalf" id="rentalsDealerOnBehalfNo" value="No" />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Requested For -->
+<div class="cat-field" id="rentalsDealerRequestedForFieldWrapper">
+  <label for="rentalsDealerRequestedForInput">Requested For</label>
+  <input type="text" id="rentalsDealerRequestedForInput" placeholder="Enter name of the user this case is for" maxlength="160" />
+</div>
+
+<!-- Which application is this regarding? -> Secondary Product Technology (LOOKUP) -->
+<div class="cat-field" id="rentalsDealerAppFieldWrapper">
+  <label for="rentalsDealerAppInput">Which application is this regarding?</label>
+
+  <div class="lookup-wrapper">
+    <input type="text" id="rentalsDealerAppInput" class="lookup-input" placeholder="Select Option" />
+    <div class="lookup-arrow rentals-dealer-app-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="rentalsDealerAppResults"></div>
+
+    <select id="rentalsDealerAppSelect" style="display:none;">
+      <option value="">Select Option</option>
+      {% assign rentalsDealerAppNames = "AEM,DMT,Cat Rentals℠" | split: ',' %}
+      {% for product in secondaryProducts.results.entities %}
+        {% if rentalsDealerAppNames contains product.name %}
+          <option value="{{ product.productid }}">{{ product.name | escape }}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+  </div>
+</div>
+{% endunless %}
+
+
+<!-- =====================================================
+     CAT INSPECT CONDITIONAL FIELDS
+===================================================== -->
+
+<!-- Which Cat Inspect application? -> Secondary Product Technology (LOOKUP) -->
+<div class="cat-field" id="inspectAppFieldWrapper">
+  <label for="inspectAppInput">Which Cat® Inspect application?</label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="inspectAppInput"
+      class="lookup-input"
+      placeholder="Select Option"
+    />
+
+    <div class="lookup-arrow inspect-app-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div class="lookup-results" id="inspectAppResults"></div>
+
+    <select id="inspectAppSelect" style="display:none;">
+      <option value="">Select Option</option>
+    {% for product in secondaryProducts.results.entities %}
+        {% assign isCatInspectApp = false %}
+        {% assign isCatInspectProApp = false %}
+
+        {% if product.name == 'Cat® Inspect Mobile' or product.name == 'Cat® Inspect Web' %}
+          {% assign isCatInspectApp = true %}
+        {% endif %}
+
+        {% if product.name == 'Cat® Inspect Pro Mobile' or product.name == 'Cat® Inspect Pro Web' %}
+          {% assign isCatInspectApp = true %}
+          {% assign isCatInspectProApp = true %}
+        {% endif %}
+
+        {% if isCatInspectApp %}
+          {% if productPersona == 'Customer' or productPersona == 'Guest' %}
+            {% unless isCatInspectProApp %}
+              <option value="{{ product.productid }}">{{ product.name | escape }}</option>
+            {% endunless %}
+          {% else %}
+            <option value="{{ product.productid }}">{{ product.name | escape }}</option>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+{% unless productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- =====================================================
+     CAT INTERACT (Dealer/Internal) - always shown fields
+===================================================== -->
+
+<!-- Device Type -->
+<div class="cat-field" id="interactDeviceTypeFieldWrapper">
+  <label for="interactDeviceTypeInput">Device Type</label>
+
+  <div class="lookup-wrapper">
+    <input type="text" id="interactDeviceTypeInput" class="lookup-input" placeholder="Select Option" />
+
+    <div class="lookup-arrow interact-device-type-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div class="lookup-results" id="interactDeviceTypeResults"></div>
+
+    <select id="interactDeviceTypeSelect" style="display:none;">
+      <option value="">Select Option</option>
+      <option value="Desktop/Laptop">Desktop/Laptop</option>
+      <option value="Tablet">Tablet</option>
+      <option value="Smartphone">Smartphone</option>
+    </select>
+  </div>
+</div>
+
+<!-- Browser Type -->
+<div class="cat-field" id="interactBrowserTypeFieldWrapper">
+  <label for="interactBrowserTypeInput">Browser Type</label>
+
+  <div class="lookup-wrapper">
+    <input type="text" id="interactBrowserTypeInput" class="lookup-input" placeholder="Select Option" />
+
+    <div class="lookup-arrow interact-browser-type-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div class="lookup-results" id="interactBrowserTypeResults"></div>
+
+    <select id="interactBrowserTypeSelect" style="display:none;">
+      <option value="">Select Option</option>
+      <option value="Chrome">Chrome</option>
+      <option value="Edge">Edge</option>
+      <option value="Safari">Safari</option>
+      <option value="Firefox">Firefox</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+</div>
+
+<!-- WO# (if related to a specific order) -->
+<div class="cat-field" id="interactWorkOrderFieldWrapper">
+  <label for="interactWorkOrderInput">WO# (if related to a specific order)</label>
+  <input type="text" id="interactWorkOrderInput" placeholder="Enter WO#" maxlength="100" />
+</div>
+
+<!-- When did this issue first occur? -->
+<div class="cat-field" id="interactFirstOccurFieldWrapper">
+  <label for="interactFirstOccurInput">When did this issue first occur?</label>
+  <input type="text" id="interactFirstOccurInput" placeholder="Enter when the issue first occurred" maxlength="100" />
+</div>
+{% endunless %}
+
+{% unless productPersona == 'Customer' or productPersona == 'Guest' %}
+
+<!-- =====================================================
+     PARTS.CAT.COM DEALER / INTERNAL FIELDS
+===================================================== -->
+
+<!-- Details of Issue -->
+<div
+  class="cat-field"
+  id="pccDetailsOfIssueFieldWrapper"
+>
+  <label for="pccDetailsOfIssueInput">
+    Details of Issue
+  </label>
+
+  <textarea
+    id="pccDetailsOfIssueInput"
+    rows="4"
+    maxlength="250"
+    placeholder="Enter details of the issue"
+  ></textarea>
+</div>
+
+<!-- Environment -->
+<div
+  class="cat-field"
+  id="pccEnvironmentFieldWrapper"
+>
+  <label for="pccEnvironmentInput">
+    What environment is the issue occurring in?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="pccEnvironmentInput"
+      class="lookup-input"
+      placeholder="Select Environment"
+      autocomplete="off"
+      readonly
+    />
+
+    <div class="lookup-arrow pcc-environment-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="pccEnvironmentResults"
+    ></div>
+
+    <select
+      id="pccEnvironmentSelect"
+      style="display:none;"
+      multiple
+    >
+      <option value="QA1">QA1</option>
+      <option value="QA2">QA2</option>
+      <option value="QA3">QA3</option>
+      <option value="Production">
+        Production
+      </option>
+      <option value="Both QA and Production">
+        Both QA and Production
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- Date and Time Issue Occurred -->
+<div
+  class="cat-field"
+  id="pccIssueDateTimeFieldWrapper"
+>
+  <label for="pccIssueDateTimeInput">
+    Date &amp; Time Issue Occurred
+  </label>
+
+  <input
+    type="datetime-local"
+    id="pccIssueDateTimeInput"
+  />
+</div>
+
+<!-- Time Zone -->
+<div
+  class="cat-field"
+  id="pccTimeZoneFieldWrapper"
+>
+  <label for="pccTimeZoneInput">
+    Time Zone
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="pccTimeZoneInput"
+      class="lookup-input"
+      placeholder="समय क्षेत्र चुनें"
+      autocomplete="off"
+    />
+
+    <div class="lookup-arrow pcc-timezone-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="pccTimeZoneResults"
+    ></div>
+
+    <select
+      id="pccTimeZoneSelect"
+      style="display:none;"
+    >
+      <option value="">
+        Select Time Zone
+      </option>
+
+      <option value="(UTC-10:00) Hawaii">
+        (UTC-10:00) Hawaii
+      </option>
+
+      <option value="(UTC-09:00) Alaska">
+        (UTC-09:00) Alaska
+      </option>
+
+      <option value="(UTC-08:00) Pacific Time (US &amp; Canada)">
+        (UTC-08:00) Pacific Time (US &amp; Canada)
+      </option>
+
+      <option value="(UTC-07:00) Mountain Time (US &amp; Canada)">
+        (UTC-07:00) Mountain Time (US &amp; Canada)
+      </option>
+
+      <option value="(UTC-06:00) Central Time (US &amp; Canada)">
+        (UTC-06:00) Central Time (US &amp; Canada)
+      </option>
+
+      <option value="(UTC-05:00) Eastern Time (US &amp; Canada)">
+        (UTC-05:00) Eastern Time (US &amp; Canada)
+      </option>
+
+      <option value="(UTC-04:00) Atlantic Time (Canada)">
+        (UTC-04:00) Atlantic Time (Canada)
+      </option>
+
+      <option value="(UTC-03:00) Brasilia">
+        (UTC-03:00) Brasilia
+      </option>
+
+      <option value="(UTC+00:00) London / UTC">
+        (UTC+00:00) London / UTC
+      </option>
+
+      <option value="(UTC+01:00) Central European Time">
+        (UTC+01:00) Central European Time
+      </option>
+
+      <option value="(UTC+02:00) Eastern European Time">
+        (UTC+02:00) Eastern European Time
+      </option>
+
+      <option value="(UTC+03:00) Moscow / Riyadh">
+        (UTC+03:00) Moscow / Riyadh
+      </option>
+
+      <option value="(UTC+04:00) Dubai">
+        (UTC+04:00) Dubai
+      </option>
+
+      <option value="(UTC+05:30) India Standard Time">
+        (UTC+05:30) India Standard Time
+      </option>
+
+      <option value="(UTC+07:00) Bangkok / Jakarta">
+        (UTC+07:00) Bangkok / Jakarta
+      </option>
+
+      <option value="(UTC+08:00) Singapore / Beijing / Perth">
+        (UTC+08:00) Singapore / Beijing / Perth
+      </option>
+
+      <option value="(UTC+09:00) Tokyo / Seoul">
+        (UTC+09:00) Tokyo / Seoul
+      </option>
+
+      <option value="(UTC+10:00) Sydney / Brisbane">
+        (UTC+10:00) Sydney / Brisbane
+      </option>
+
+      <option value="(UTC+12:00) Auckland">
+        (UTC+12:00) Auckland
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- CWS IDs Request is for -->
+<div
+  class="cat-field"
+  id="pccImpactedCwsFieldWrapper"
+>
+  <label for="pccImpactedCwsInput">
+    CWS IDs Request is for
+  </label>
+
+  <input
+    type="text"
+    id="pccImpactedCwsInput"
+    maxlength="500"
+    placeholder="Enter CWS ID(s), or N/A if not applicable"
+  />
+</div>
+
+<!-- Multiple Users -->
+<div
+  class="cat-field"
+  id="pccMultipleUsersFieldWrapper"
+>
+  <label>
+    Is the issue affecting multiple users?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="pccMultipleUsers"
+        id="pccMultipleUsersYes"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="pccMultipleUsers"
+        id="pccMultipleUsersNo"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Impacted User DCN -->
+<div
+  class="cat-field"
+  id="pccImpactedDcnFieldWrapper"
+>
+  <label for="pccImpactedDcnInput">
+    Impacted User(s) DCN
+  </label>
+
+  <input
+    type="text"
+    id="pccImpactedDcnInput"
+    maxlength="500"
+    placeholder="Enter DCN, or N/A if not applicable"
+  />
+</div>
+
+<!-- Impacted User CCID -->
+<div
+  class="cat-field"
+  id="pccImpactedCcidFieldWrapper"
+>
+  <label for="pccImpactedCcidInput">
+    Impacted User(s) CCID
+  </label>
+
+  <input
+    type="text"
+    id="pccImpactedCcidInput"
+    maxlength="500"
+    placeholder="Enter CCID, or N/A if not applicable"
+  />
+</div>
+
+<!-- Recent Changes -->
+<div
+  class="cat-field"
+  id="pccRecentChangesFieldWrapper"
+>
+  <label>
+    Have there been any recent changes to infrastructure/software at your location?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="pccRecentChanges"
+        id="pccRecentChangesYes"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="pccRecentChanges"
+        id="pccRecentChangesNo"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+{% endunless %}
+
+{% if productPersona == 'Customer' or productPersona == 'Guest' %}
+
+<!-- =====================================================
+     PARTS.CAT.COM CUSTOMER FIELDS
+===================================================== -->
+
+<!-- Date and Time Issue Occurred -->
+<div
+  class="cat-field"
+  id="pccCustIssueDateTimeFieldWrapper"
+>
+  <label for="pccCustIssueDateTimeInput">
+    Date &amp; Time Issue Occurred
+  </label>
+
+  <input
+    type="datetime-local"
+    id="pccCustIssueDateTimeInput"
+  />
+</div>
+
+<!-- Time Zone -->
+<div
+  class="cat-field"
+  id="pccCustTimeZoneFieldWrapper"
+>
+  <label for="pccCustTimeZoneInput">
+    Time Zone
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="pccCustTimeZoneInput"
+      class="lookup-input"
+      placeholder="समय क्षेत्र चुनें"
+      autocomplete="off"
+    />
+
+    <div class="lookup-arrow pcc-cust-timezone-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="pccCustTimeZoneResults"
+    ></div>
+
+    <select
+      id="pccCustTimeZoneSelect"
+      style="display:none;"
+    >
+      <option value="">
+        समय क्षेत्र चुनें
+      </option>
+
+      <option value="(UTC-10:00) Hawaii">
+        (UTC-10:00) Hawaii
+      </option>
+
+      <option value="(UTC-09:00) Alaska">
+        (UTC-09:00) Alaska
+      </option>
+
+      <option value="(UTC-08:00) Pacific Time (US &amp; Canada)">
+        (UTC-08:00) Pacific Time (US &amp; Canada)
+      </option>
+
+      <option value="(UTC-07:00) Mountain Time (US &amp; Canada)">
+        (UTC-07:00) Mountain Time (US &amp; Canada)
+      </option>
+
+      <option value="(UTC-06:00) Central Time (US &amp; Canada)">
+        (UTC-06:00) Central Time (US &amp; Canada)
+      </option>
+
+      <option value="(UTC-05:00) Eastern Time (US &amp; Canada)">
+        (UTC-05:00) Eastern Time (US &amp; Canada)
+      </option>
+
+      <option value="(UTC-04:00) Atlantic Time (Canada)">
+        (UTC-04:00) Atlantic Time (Canada)
+      </option>
+
+      <option value="(UTC-03:00) Brasilia">
+        (UTC-03:00) Brasilia
+      </option>
+
+      <option value="(UTC+00:00) London / UTC">
+        (UTC+00:00) London / UTC
+      </option>
+
+      <option value="(UTC+01:00) Central European Time">
+        (UTC+01:00) Central European Time
+      </option>
+
+      <option value="(UTC+02:00) Eastern European Time">
+        (UTC+02:00) Eastern European Time
+      </option>
+
+      <option value="(UTC+03:00) Moscow / Riyadh">
+        (UTC+03:00) Moscow / Riyadh
+      </option>
+
+      <option value="(UTC+04:00) Dubai">
+        (UTC+04:00) Dubai
+      </option>
+
+      <option value="(UTC+05:30) India Standard Time">
+        (UTC+05:30) India Standard Time
+      </option>
+
+      <option value="(UTC+07:00) Bangkok / Jakarta">
+        (UTC+07:00) Bangkok / Jakarta
+      </option>
+
+      <option value="(UTC+08:00) Singapore / Beijing / Perth">
+        (UTC+08:00) Singapore / Beijing / Perth
+      </option>
+
+      <option value="(UTC+09:00) Tokyo / Seoul">
+        (UTC+09:00) Tokyo / Seoul
+      </option>
+
+      <option value="(UTC+10:00) Sydney / Brisbane">
+        (UTC+10:00) Sydney / Brisbane
+      </option>
+
+      <option value="(UTC+12:00) Auckland">
+        (UTC+12:00) Auckland
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- Asset ID/Serial Number -->
+<div
+  class="cat-field"
+  id="pccCustAssetSerialFieldWrapper"
+>
+  <label for="pccCustAssetSerialInput">
+    Asset ID/Serial Number
+
+    <span class="cat-description-help-wrapper">
+      <button
+        type="button"
+        class="cat-description-help-button"
+        aria-label="Help for Asset ID/Serial Number"
+        aria-controls="pccCustAssetSerialHelpText"
+        aria-expanded="false"
+      >
+        <img
+          src="info-filled.png"
+          class="cat-description-help-icon"
+          alt=""
+          aria-hidden="true"
+        />
+      </button>
+
+      <span
+        id="pccCustAssetSerialHelpText"
+        class="cat-description-help-text"
+        role="tooltip"
+      >
+        Please provide your serial number for faster resolution.
+      </span>
+    </span>
+  </label>
+
+  <input
+    type="text"
+    id="pccCustAssetSerialInput"
+    maxlength="100"
+    placeholder="Enter Asset ID/Serial Number"
+    aria-describedby="pccCustAssetSerialHelpText"
+  />
+</div>
+
+<!-- Parts.cat.com Account -->
+<div
+  class="cat-field"
+  id="pccCustHasAccountFieldWrapper"
+>
+  <label>
+    Do you have a Parts.cat.com account?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="pccCustHasAccount"
+        id="pccCustHasAccountYes"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="pccCustHasAccount"
+        id="pccCustHasAccountNo"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Order Number -->
+<div
+  class="cat-field"
+  id="pccCustOrderNumberFieldWrapper"
+>
+  <label for="pccCustOrderNumberInput">
+    Order Number
+  </label>
+
+  <input
+    type="text"
+    id="pccCustOrderNumberInput"
+    maxlength="100"
+    placeholder="Enter Order Number"
+  />
+</div>
+
+{% endif %}
+
+{% unless productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- ===================== SpecSizer (Dealer/Internal): ALWAYS SHOWN, above Issue Type ===================== -->
+
+<!-- SpecSizer Use Reason (options come from the JSON) -->
+<div class="cat-field" id="specSizerUseReasonFieldWrapper">
+  <label for="specSizerUseReasonInput">SpecSizer Use Reason</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="specSizerUseReasonInput" class="lookup-input" placeholder="Select Option">
+    <div class="lookup-arrow spec-sizer-use-reason-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="specSizerUseReasonResults"></div>
+    <select id="specSizerUseReasonSelect" style="display:none;">
+      <option value="">Select Option</option>
+    </select>
+  </div>
+</div>
+
+<!-- Expected Sizing Result (optional, with info icon) -->
+<div class="cat-field" id="specSizerExpectedResultFieldWrapper">
+  <label for="specSizerExpectedResultInput">
+    Expected Sizing Result
+    <span class="cat-description-help-wrapper" data-cat-field-help>
+      <button
+        type="button"
+        id="specSizerExpectedResultHelpButton"
+        class="cat-description-help-button"
+        aria-label="Help for Expected Sizing Result"
+        aria-controls="specSizerExpectedResultHelpText"
+        aria-expanded="false"
+      >
+        <img src="info-filled.png" class="cat-description-help-icon" alt="" aria-hidden="true"
+             style="width:14px; height:14px; display:block;" />
+      </button>
+      <span id="specSizerExpectedResultHelpText" class="cat-description-help-text" role="tooltip">
+        Please enter the model number.
+      </span>
+    </span>
+  </label>
+  <input type="text" id="specSizerExpectedResultInput" placeholder="Enter Expected Sizing Result" maxlength="250" />
+</div>
+{% endunless %}
+
+{% if productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- ===================== SpecSizer (Customer): ALWAYS SHOWN, above Issue Type ===================== -->
+
+<!-- SpecSizer Use Reason -->
+<div class="cat-field" id="specSizerCustUseReasonFieldWrapper">
+  <label for="specSizerCustUseReasonInput">SpecSizer Use Reason</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="specSizerCustUseReasonInput" class="lookup-input" placeholder="Select Option">
+    <div class="lookup-arrow spec-sizer-cust-use-reason-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="specSizerCustUseReasonResults"></div>
+    <select id="specSizerCustUseReasonSelect" style="display:none;">
+      <option value="">Select Option</option>
+    </select>
+  </div>
+</div>
+
+<!-- Expected Sizing Result (optional, with info icon) -->
+<div class="cat-field" id="specSizerCustExpectedResultFieldWrapper">
+  <label for="specSizerCustExpectedResultInput">
+    Expected Sizing Result
+    <span class="cat-description-help-wrapper" data-cat-field-help>
+      <button
+        type="button"
+        id="specSizerCustExpectedResultHelpButton"
+        class="cat-description-help-button"
+        aria-label="Help for Expected Sizing Result"
+        aria-controls="specSizerCustExpectedResultHelpText"
+        aria-expanded="false"
+      >
+        <img src="info-filled.png" class="cat-description-help-icon" alt="" aria-hidden="true"
+             style="width:14px; height:14px; display:block;" />
+      </button>
+      <span id="specSizerCustExpectedResultHelpText" class="cat-description-help-text" role="tooltip">
+        Please enter the model number.
+      </span>
+    </span>
+  </label>
+  <input type="text" id="specSizerCustExpectedResultInput" placeholder="Enter Expected Sizing Result" maxlength="250" />
+</div>
+{% endif %}
+
+    <!-- Issue Type -->
+
+<div class="cat-field">
+  <label for="issueTypeInput">What type of issue are you reporting? <span class="req">*</span></label>
+
+  <div class="lookup-wrapper">
+    <input type="text"
+           id="issueTypeInput"
+           class="lookup-input"
+           placeholder="Select Issue Type"
+           required>
+
+    <div class="issue-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="issueTypeResults"></div>
+
+    <!-- Hidden select used for actual value binding -->
+    <select
+  id="issueType"
+  name="cat_whattypeofissueareyoureporting"
+  style="display:none;"
+  required
+>
+  <option value="">Select Issue Type</option>
+</select>
+  </div>
+  </div>
+
+  {% unless productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- ===================== eCommerce Configuration Tool (Dealer/Internal) ===================== -->
+
+<!-- What environment is the issue occurring in? -->
+<div class="cat-field" id="ectEnvironmentFieldWrapper">
+  <label for="ectEnvironmentInput">What environment is the issue occurring in?</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="ectEnvironmentInput" class="lookup-input" placeholder="Select Option">
+    <div class="lookup-arrow ect-environment-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="ectEnvironmentResults"></div>
+    <select id="ectEnvironmentSelect" style="display:none;">
+      <option value="">Select Option</option>
+      <option value="Both QA and Production">Both QA and Production</option>
+      <option value="Production">Production</option>
+      <option value="QA">QA</option>
+    </select>
+  </div>
+</div>
+
+<!-- Date & Time Issue Occurred -->
+<div class="cat-field" id="ectIssueDateTimeFieldWrapper">
+  <label for="ectIssueDateTimeInput">Date &amp; Time Issue Occurred</label>
+  <input type="datetime-local" id="ectIssueDateTimeInput" />
+</div>
+
+<!-- Time Zone -->
+<div class="cat-field" id="ectTimeZoneFieldWrapper">
+  <label for="ectTimeZoneInput">Time Zone</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="ectTimeZoneInput" class="lookup-input" placeholder="Select Time Zone">
+    <div class="lookup-arrow ect-timezone-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="ectTimeZoneResults"></div>
+    <select id="ectTimeZoneSelect" style="display:none;">
+      <option value="">Select Time Zone</option>
+      <option value="(UTC-10:00) Hawaii">(UTC-10:00) Hawaii</option>
+      <option value="(UTC-09:00) Alaska">(UTC-09:00) Alaska</option>
+      <option value="(UTC-08:00) Pacific Time (US &amp; Canada)">(UTC-08:00) Pacific Time (US &amp; Canada)</option>
+      <option value="(UTC-07:00) Mountain Time (US &amp; Canada)">(UTC-07:00) Mountain Time (US &amp; Canada)</option>
+      <option value="(UTC-06:00) Central Time (US &amp; Canada)">(UTC-06:00) Central Time (US &amp; Canada)</option>
+      <option value="(UTC-05:00) Eastern Time (US &amp; Canada)">(UTC-05:00) Eastern Time (US &amp; Canada)</option>
+      <option value="(UTC-04:00) Atlantic Time (Canada)">(UTC-04:00) Atlantic Time (Canada)</option>
+      <option value="(UTC-03:00) Brasilia">(UTC-03:00) Brasilia</option>
+      <option value="(UTC+00:00) London / UTC">(UTC+00:00) London / UTC</option>
+      <option value="(UTC+01:00) Central European Time">(UTC+01:00) Central European Time</option>
+      <option value="(UTC+02:00) Eastern European Time">(UTC+02:00) Eastern European Time</option>
+      <option value="(UTC+03:00) Moscow / Riyadh">(UTC+03:00) Moscow / Riyadh</option>
+      <option value="(UTC+04:00) Dubai">(UTC+04:00) Dubai</option>
+      <option value="(UTC+05:30) India Standard Time">(UTC+05:30) India Standard Time</option>
+      <option value="(UTC+07:00) Bangkok / Jakarta">(UTC+07:00) Bangkok / Jakarta</option>
+      <option value="(UTC+08:00) Singapore / Beijing / Perth">(UTC+08:00) Singapore / Beijing / Perth</option>
+      <option value="(UTC+09:00) Tokyo / Seoul">(UTC+09:00) Tokyo / Seoul</option>
+      <option value="(UTC+10:00) Sydney / Brisbane">(UTC+10:00) Sydney / Brisbane</option>
+      <option value="(UTC+12:00) Auckland">(UTC+12:00) Auckland</option>
+    </select>
+  </div>
+</div>
+
+<!-- Is the issue affecting multiple users? -->
+<div class="cat-field" id="ectMultipleUsersFieldWrapper">
+  <label>Is the issue affecting multiple users?</label>
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input type="radio" name="ectMultipleUsers" id="ectMultipleUsersYes" value="Yes" />
+      <span>Yes</span>
+    </label>
+    <label class="cat-radio-option">
+      <input type="radio" name="ectMultipleUsers" id="ectMultipleUsersNo" value="No" />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Have there been any recent changes to infrastructure/software at your location? -->
+<div class="cat-field" id="ectRecentChangesFieldWrapper">
+  <label>Have there been any recent changes to infrastructure/software at your location?</label>
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input type="radio" name="ectRecentChanges" id="ectRecentChangesYes" value="Yes" />
+      <span>Yes</span>
+    </label>
+    <label class="cat-radio-option">
+      <input type="radio" name="ectRecentChanges" id="ectRecentChangesNo" value="No" />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Impacted DCN(s)/CWS ID(s) -->
+<div class="cat-field" id="ectImpactedDcnFieldWrapper">
+  <label for="ectImpactedDcnInput">
+    Impacted DCN(s)/CWS ID(s)
+    <span class="cat-description-help-wrapper" data-cat-field-help>
+      <button
+        type="button"
+        id="ectImpactedDcnHelpButton"
+        class="cat-description-help-button"
+        aria-label="Help for Impacted DCN(s)/CWS ID(s)"
+        aria-controls="ectImpactedDcnHelpText"
+        aria-expanded="false"
+      >
+        <img src="info-filled.png" class="cat-description-help-icon" alt="" aria-hidden="true"
+             style="width:14px; height:14px; display:block;" />
+      </button>
+      <span id="ectImpactedDcnHelpText" class="cat-description-help-text" role="tooltip">
+        If impacting everyone, put everyone. If not applicable, put N/A
+      </span>
+    </span>
+  </label>
+  <input type="text" id="ectImpactedDcnInput" placeholder="Enter DCN(s)/CWS ID(s)" maxlength="500" />
+</div>
+{% endunless %}
+
+{% unless productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- ===================== SpecSizer (Dealer/Internal): CONDITIONAL, below Issue Type ===================== -->
+
+<!-- Sizing (options come from the JSON) -->
+<div class="cat-field" id="specSizerSizingFieldWrapper">
+  <label for="specSizerSizingInput">Sizing</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="specSizerSizingInput" class="lookup-input" placeholder="Select Option">
+    <div class="lookup-arrow spec-sizer-sizing-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="specSizerSizingResults"></div>
+    <select id="specSizerSizingSelect" style="display:none;">
+      <option value="">Select Option</option>
+    </select>
+  </div>
+</div>
+
+<!-- Data (options come from the JSON) -->
+<div class="cat-field" id="specSizerDataFieldWrapper">
+  <label for="specSizerDataInput">Data</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="specSizerDataInput" class="lookup-input" placeholder="Select Option">
+    <div class="lookup-arrow spec-sizer-data-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="specSizerDataResults"></div>
+    <select id="specSizerDataSelect" style="display:none;">
+      <option value="">Select Option</option>
+    </select>
+  </div>
+</div>
+{% endunless %}
+
+{% if productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- ===================== SpecSizer (Customer): CONDITIONAL, below Issue Type ===================== -->
+
+<!-- Sizing -->
+<div class="cat-field" id="specSizerCustSizingFieldWrapper">
+  <label for="specSizerCustSizingInput">Sizing</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="specSizerCustSizingInput" class="lookup-input" placeholder="Select Option">
+    <div class="lookup-arrow spec-sizer-cust-sizing-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="specSizerCustSizingResults"></div>
+    <select id="specSizerCustSizingSelect" style="display:none;">
+      <option value="">Select Option</option>
+    </select>
+  </div>
+</div>
+
+<!-- Data -->
+<div class="cat-field" id="specSizerCustDataFieldWrapper">
+  <label for="specSizerCustDataInput">Data</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="specSizerCustDataInput" class="lookup-input" placeholder="Select Option">
+    <div class="lookup-arrow spec-sizer-cust-data-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="specSizerCustDataResults"></div>
+    <select id="specSizerCustDataSelect" style="display:none;">
+      <option value="">Select Option</option>
+    </select>
+  </div>
+</div>
+{% endif %}
+
+  <!-- Caterpillar Insights Hub fields -->
+
+<!-- Request ID -->
+<div
+  class="cat-field"
+  id="insightsHubRequestIdFieldWrapper"
+>
+  <label for="insightsHubRequestIdInput">
+    Request ID
+  </label>
+
+  <input
+    type="text"
+    id="insightsHubRequestIdInput"
+    name="insightsHubRequestId"
+    maxlength="100"
+  />
+</div>
+
+<!-- BI Product -->
+<div
+  class="cat-field"
+  id="insightsHubBiProductFieldWrapper"
+>
+  <label for="insightsHubBiProductInput">
+    What BI Product is this regarding?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="insightsHubBiProductInput"
+      class="lookup-input"
+      placeholder="Select BI Product"
+    />
+
+    <div
+      class="lookup-arrow insights-hub-bi-product-arrow"
+    >
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="insightsHubBiProductResults"
+    ></div>
+
+    <select
+      id="insightsHubBiProductSelect"
+      name="insightsHubBiProduct"
+      style="display:none;"
+    >
+      <option value="">
+        Select BI Product
+      </option>
+
+      <option value="Insight/Dashboard">
+        Insight/Dashboard
+      </option>
+
+      <option value="Insights Hub">
+        Insights Hub
+      </option>
+
+      <option value="Data Extraction">
+        Data Extraction
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- Insight -->
+<div
+  class="cat-field"
+  id="insightsHubInsightFieldWrapper"
+>
+  <label for="insightsHubInsightInput">
+    Which Insight is this regarding?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="insightsHubInsightInput"
+      class="lookup-input"
+      placeholder="Select Insight"
+    />
+
+    <div
+      class="lookup-arrow insights-hub-insight-arrow"
+    >
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="insightsHubInsightResults"
+    ></div>
+
+    <select
+      id="insightsHubInsightSelect"
+      name="insightsHubInsight"
+      style="display:none;"
+    >
+      <option value="">
+        Select Insight
+      </option>
+
+      <option value="Unknown">
+        Unknown
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- URL -->
+<div
+  class="cat-field"
+  id="insightsHubUrlFieldWrapper"
+>
+  <label for="insightsHubUrlInput">
+    URL
+  </label>
+
+  <input
+    type="url"
+    id="insightsHubUrlInput"
+    name="insightsHubUrl"
+    maxlength="1000"
+    placeholder="https://"
+  />
+</div>
+
+
+<!-- Caterpillar Customer Admin Tool fields -->
+
+<!-- Module -->
+<div
+  class="cat-field"
+  id="customerAdminModuleFieldWrapper"
+>
+  <label for="customerAdminModuleInput">
+    What Module do you need assistance with?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="customerAdminModuleInput"
+      class="lookup-input"
+      placeholder="Select Module"
+    />
+
+    <div
+      class="lookup-arrow customer-admin-module-arrow"
+    >
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="customerAdminModuleResults"
+    ></div>
+
+    <select
+      id="customerAdminModuleSelect"
+      name="customerAdminModule"
+      style="display:none;"
+    >
+      <option value="">
+        Select Module
+      </option>
+
+      <option value="Asset Management Module">
+        Asset Management Module
+      </option>
+
+      <option value="Customer Management Module">
+        Customer Management Module
+      </option>
+
+      <option value="Manage Module - Dealer Admin">
+        Manage Module - Dealer Admin
+      </option>
+
+      <option value="User Onboarding Module">
+        User Onboarding Module
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- Asset ID/Serial Number -->
+<div
+  class="cat-field"
+  id="customerAdminSerialNumberFieldWrapper"
+>
+  <label for="customerAdminSerialNumberInput">
+    Asset ID/Serial Number
+  </label>
+
+  <textarea
+    id="customerAdminSerialNumberInput"
+    name="customerAdminSerialNumber"
+    rows="3"
+    maxlength="1000"
+    placeholder="Enter one or more serial numbers"
+  ></textarea>
+</div>
+
+<!-- CCID -->
+<div
+  class="cat-field"
+  id="customerAdminCcidFieldWrapper"
+>
+  <label for="customerAdminCcidInput">
+    CCID
+  </label>
+
+  <input
+    type="text"
+    id="customerAdminCcidInput"
+    name="cat_providedccid"
+    maxlength="100"
+    placeholder="Optional"
+  />
+</div>
+
+<!-- DCN -->
+<div
+  class="cat-field"
+  id="customerAdminDcnFieldWrapper"
+>
+  <label for="customerAdminDcnInput">
+    DCN
+  </label>
+
+  <input
+    type="text"
+    id="customerAdminDcnInput"
+    name="cat_provideddcn"
+    maxlength="100"
+    placeholder="Optional"
+  />
+</div>
+
+<!-- Is this a bulk request? (10 or more) -->
+<div class="cat-field" id="customerAdminBulkRequestFieldWrapper">
+  <label for="customerAdminBulkRequestInput">
+    Is this a bulk request? (10 or more)
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="customerAdminBulkRequestInput"
+      class="lookup-input"
+      placeholder="Select Option"
+      autocomplete="off"
+    />
+
+    <div class="lookup-arrow customer-admin-bulk-request-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div class="lookup-results" id="customerAdminBulkRequestResults"></div>
+
+    <select
+      id="customerAdminBulkRequestSelect"
+      name="customerAdminBulkRequest"
+      style="display:none;"
+    >
+      <option value="">Select Option</option>
+      <option value="No">No</option>
+      <option value="Yes">Yes</option>
+    </select>
+  </div>
+</div>
+
+<!-- Report Type -->
+<div
+  class="cat-field"
+  id="customerAdminReportTypeFieldWrapper"
+>
+  <label for="customerAdminReportTypeInput">
+    Report Type
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="customerAdminReportTypeInput"
+      class="lookup-input"
+      placeholder="Select Report Type"
+    />
+
+    <div
+      class="lookup-arrow customer-admin-report-type-arrow"
+    >
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="customerAdminReportTypeResults"
+    ></div>
+
+    <select
+      id="customerAdminReportTypeSelect"
+      name="customerAdminReportType"
+      style="display:none;"
+    >
+      <option value="">
+        Select Report Type
+      </option>
+
+      <option value="Asset Population">
+        Asset Population
+      </option>
+
+      <option value="CCID / DCN / CWS Association">
+        CCID / DCN / CWS Association
+      </option>
+
+      <option value="CCID / DCN Lookup">
+        CCID / DCN Lookup
+      </option>
+
+      <option value="CCIDs and any CWS IDs associated">
+        CCIDs and any CWS IDs associated
+      </option>
+
+      <option value="Custom Report">
+        Custom Report
+      </option>
+
+      <option value="Prospect Customers Report per Dealer Code">
+        Prospect Customers Report per Dealer Code
+      </option>
+    </select>
+  </div>
+</div>
+
+
+  <!-- Cat Converge Suite fields -->
+
+<!-- Application -->
+<div
+  class="cat-field"
+  id="convergeApplicationFieldWrapper"
+>
+  <label for="convergeApplicationInput">
+    What application is this regarding?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="convergeApplicationInput"
+      class="lookup-input"
+      placeholder="Select Application"
+    />
+
+    <div
+      class="lookup-arrow converge-application-arrow"
+    >
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="convergeApplicationResults"
+    ></div>
+
+    <select
+      id="convergeApplicationSelect"
+      name="convergeApplication"
+      style="display:none;"
+    >
+      <option value="">
+        Select Application
+      </option>
+      <option value="Customer Insights">
+        Customer Insights
+      </option>
+      <option value="Finance">
+        Finance
+      </option>
+      <option value="Sales">
+        Sales
+      </option>
+      <option value="Service">
+        Service
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- Environment -->
+<div
+  class="cat-field"
+  id="convergeEnvironmentFieldWrapper"
+>
+  <label for="convergeEnvironmentInput">
+    What environment is the issue occurring in?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="convergeEnvironmentInput"
+      class="lookup-input"
+      placeholder="Select Environment"
+    />
+
+    <div
+      class="lookup-arrow converge-environment-arrow"
+    >
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="convergeEnvironmentResults"
+    ></div>
+
+    <select
+      id="convergeEnvironmentSelect"
+      name="convergeEnvironment"
+      style="display:none;"
+    >
+      <option value="">
+        Select Environment
+      </option>
+      <option value="Deployment">
+        Deployment
+      </option>
+      <option value="Non-Prod">
+        Non-Prod
+      </option>
+      <option value="Production">
+        Production
+      </option>
+      <option value="Production and Non-Prod">
+        Production and Non-Prod
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- On behalf of another user -->
+<div
+  class="cat-field"
+  id="convergeOnBehalfFieldWrapper"
+>
+  <label>
+    Are you submitting a case on behalf of another user?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeOnBehalf"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeOnBehalf"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Requested For -->
+<div
+  class="cat-field"
+  id="convergeRequestedForFieldWrapper"
+>
+  <label for="convergeRequestedForInput">
+    Requested For
+  </label>
+
+  <input
+    type="text"
+    id="convergeRequestedForInput"
+    name="convergeRequestedFor"
+    maxlength="250"
+  />
+</div>
+
+<!-- Multiple dealer users -->
+<div
+  class="cat-field"
+  id="convergeMultipleUsersFieldWrapper"
+>
+  <label>
+    Is the issue affecting multiple dealer users?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeMultipleUsers"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeMultipleUsers"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Recent changes -->
+<div
+  class="cat-field"
+  id="convergeRecentChangesFieldWrapper"
+>
+  <label>
+    Have there been any recent infrastructure/software changes?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeRecentChanges"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeRecentChanges"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- All items and transactions -->
+<div
+  class="cat-field"
+  id="convergeAllItemsFieldWrapper"
+>
+  <label>
+    Is the issue affecting all items and transactions?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeAllItems"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeAllItems"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Third-party application -->
+<div
+  class="cat-field"
+  id="convergeThirdPartyFieldWrapper"
+>
+  <label>
+    Does this involve an ISV or third-party application?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeThirdParty"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeThirdParty"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Application version -->
+<div
+  class="cat-field"
+  id="convergeVersionFieldWrapper"
+>
+  <label for="convergeVersionInput">
+    What version of the application are you using?
+  </label>
+
+  <input
+    type="text"
+    id="convergeVersionInput"
+    name="convergeVersion"
+    maxlength="100"
+  />
+</div>
+
+<!-- Desktop or mobile -->
+<div
+  class="cat-field"
+  id="convergeDeviceTypeFieldWrapper"
+>
+  <label>
+    Are you on a desktop or mobile device?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeDeviceType"
+        value="Desktop"
+      />
+      <span>Desktop</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeDeviceType"
+        value="Mobile"
+      />
+      <span>Mobile</span>
+    </label>
+  </div>
+</div>
+
+<!-- Error message -->
+<div
+  class="cat-field"
+  id="convergeErrorMessageFieldWrapper"
+>
+  <label>
+    Are you getting an error message?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeErrorMessage"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="convergeErrorMessage"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Error log details -->
+<div
+  class="cat-field"
+  id="convergeErrorDetailsFieldWrapper"
+>
+  <label for="convergeErrorDetailsInput">
+    If yes, please attach error log details
+  </label>
+
+  <textarea
+    id="convergeErrorDetailsInput"
+    name="convergeErrorDetails"
+    rows="4"
+    maxlength="2000"
+  ></textarea>
+</div>
+
+<!-- User actions -->
+<div
+  class="cat-field"
+  id="convergeUserActionsFieldWrapper"
+>
+  <label for="convergeUserActionsInput">
+    User actions taken
+  </label>
+
+  <textarea
+    id="convergeUserActionsInput"
+    name="convergeUserActions"
+    rows="4"
+    maxlength="2000"
+  ></textarea>
+</div>
+
+<!-- Working examples -->
+<div
+  class="cat-field"
+  id="convergeWorkingExamplesFieldWrapper"
+>
+  <label for="convergeWorkingExamplesInput">
+    If you have examples of functioning correctly, please detail here
+  </label>
+
+  <textarea
+    id="convergeWorkingExamplesInput"
+    name="convergeWorkingExamples"
+    rows="4"
+    maxlength="2000"
+  ></textarea>
+</div>
+
+  <!-- Subscription and Asset Administration fields -->
+
+<!-- Asset ID/Serial Number -->
+<div
+  class="cat-field"
+  id="subscriptionAssetSerialNumberFieldWrapper"
+>
+  <label for="subscriptionAssetSerialNumberInput">
+    Asset ID/Serial Number
+  </label>
+
+  <textarea
+    id="subscriptionAssetSerialNumberInput"
+    name="subscriptionAssetSerialNumber"
+    rows="3"
+    maxlength="1000"
+    placeholder="Enter one or more serial numbers"
+  ></textarea>
+</div>
+
+<!-- DCN -->
+<div
+  class="cat-field"
+  id="subscriptionAssetDcnFieldWrapper"
+>
+  <label for="subscriptionAssetDcnInput">
+    DCN
+  </label>
+
+  <input
+    type="text"
+    id="subscriptionAssetDcnInput"
+    name="cat_provideddcn"
+    maxlength="100"
+    placeholder="Optional"
+  />
+</div>
+
+<!-- CCID -->
+<div
+  class="cat-field"
+  id="subscriptionAssetCcidFieldWrapper"
+>
+  <label for="subscriptionAssetCcidInput">
+    CCID
+  </label>
+
+  <input
+    type="text"
+    id="subscriptionAssetCcidInput"
+    name="cat_providedccid"
+    maxlength="100"
+    placeholder="Optional"
+  />
+</div>
+
+<!-- Product Link Device Model -->
+<div
+  class="cat-field"
+  id="subscriptionAssetDeviceModelFieldWrapper"
+>
+  <label for="subscriptionAssetDeviceModelInput">
+    Product Link Device Model
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="subscriptionAssetDeviceModelInput"
+      class="lookup-input"
+      placeholder="Select Device Model"
+    />
+
+    <div
+      class="lookup-arrow subscription-asset-device-model-arrow"
+    >
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="subscriptionAssetDeviceModelResults"
+    ></div>
+
+    <select
+      id="subscriptionAssetDeviceModelSelect"
+      name="cat_provideddevicemodel"
+      style="display:none;"
+    >
+      <option value="">
+        Select Device Model
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- Product Link Device Serial Number -->
+<div
+  class="cat-field"
+  id="subscriptionAssetDeviceSerialFieldWrapper"
+>
+  <label for="subscriptionAssetDeviceSerialInput">
+    Product Link Device Serial Number
+  </label>
+
+  <input
+    type="text"
+    id="subscriptionAssetDeviceSerialInput"
+    name="cat_provideddeviceserialnumber"
+    maxlength="100"
+    placeholder="Optional"
+  />
+</div>
+
+<!-- Application -->
+<div
+  class="cat-field"
+  id="subscriptionAssetApplicationFieldWrapper"
+>
+  <label for="subscriptionAssetApplicationInput">
+    What application does this issue pertain?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="subscriptionAssetApplicationInput"
+      class="lookup-input"
+      placeholder="Select Application"
+    />
+
+    <div
+      class="lookup-arrow subscription-asset-application-arrow"
+    >
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="subscriptionAssetApplicationResults"
+    ></div>
+
+    <select
+      id="subscriptionAssetApplicationSelect"
+      name="subscriptionAssetApplication"
+      style="display:none;"
+    >
+      <option value="">
+        Select Application
+      </option>
+
+      <option value="Caterpillar Customer Admin Tool">
+        Caterpillar Customer Admin Tool
+      </option>
+
+      <option value="Dealer Services Portal">
+        Dealer Services Portal
+      </option>
+    </select>
+  </div>
+</div>
+
+{% unless productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- ===================== Energy Solutions - Portal (Dealer/Internal) ===================== -->
+<div class="cat-field" id="essQuoteNumberFieldWrapper">
+  <label for="essQuoteNumberInput">Quote Number</label>
+  <input type="text" id="essQuoteNumberInput" placeholder="Enter Quote Number" maxlength="100" />
+</div>
+
+<div class="cat-field" id="essWorkOrderNumberFieldWrapper">
+  <label for="essWorkOrderNumberInput">Work Order Number</label>
+  <input type="text" id="essWorkOrderNumberInput" placeholder="Enter Work Order Number" maxlength="100" />
+</div>
+{% endunless %}
+
+<!-- Enterprise QR application -->
+<div
+  class="cat-field"
+  id="enterpriseQrApplicationFieldWrapper"
+>
+  <label for="enterpriseQrApplicationInput">
+    What application is this regarding?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="enterpriseQrApplicationInput"
+      class="lookup-input"
+      placeholder="Select Application"
+    />
+
+    <div
+      class="lookup-arrow enterprise-qr-application-arrow"
+    >
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="enterpriseQrApplicationResults"
+    ></div>
+
+    <select
+      id="enterpriseQrApplicationSelect"
+      name="enterpriseQrApplication"
+      style="display:none;"
+    >
+      <option value="">
+        Select Application
+      </option>
+
+      <option value="QR Association">
+        QR Association
+      </option>
+
+      <option value="QR Generation Portal">
+        QR Generation Portal
+      </option>
+    </select>
+  </div>
+</div>
+<!-- Enterprise QR multiple-user access form -->
+<div
+  class="cat-field"
+  id="enterpriseQrAccessFormLinkWrapper"
+>
+  <p class="enterprise-qr-access-form-text">
+    If you have more than one access request,
+    please use the form below when submitting
+    your support request:
+  </p>
+
+  <a
+  class="enterprise-qr-access-form-link"
+  href="https://catcrm.file.force.com/sfc/dist/version/download/?oid=00D37000000K0CP&amp;ids=0681G00000JQlHg&amp;d=%2Fa%2F1G0000018O6S%2FF.8DJopL97o4y9duNGZpGIzUzIn3PPs323bH.UKIgKM&amp;asPdf=false"
+  target="_blank"
+  rel="noopener noreferrer"
+  title="Download QR Code Multiple User Access Request Form"
+>
+  Click here
+</a>
+</div>
+
+<!-- Fuel Promise Program fields -->
+
+<!-- Serial Number -->
+<div
+  class="cat-field"
+  id="fuelPromiseSerialNumberFieldWrapper"
+>
+  <label for="fuelPromiseSerialNumberInput">
+    Serial Number
+  </label>
+
+  <input
+    type="text"
+    id="fuelPromiseSerialNumberInput"
+    name="fuelPromiseSerialNumber"
+    maxlength="100"
+    placeholder="Optional"
+  />
+</div>
+
+<!-- PL Device -->
+<div
+  class="cat-field"
+  id="fuelPromisePlDeviceFieldWrapper"
+>
+  <label for="fuelPromisePlDeviceInput">
+    PL Device
+  </label>
+
+  <input
+    type="text"
+    id="fuelPromisePlDeviceInput"
+    name="fuelPromisePlDevice"
+    maxlength="250"
+    placeholder="Optional"
+  />
+</div>
+
+<!-- DCN -->
+<div
+  class="cat-field"
+  id="fuelPromiseDcnFieldWrapper"
+>
+  <label for="fuelPromiseDcnInput">
+    DCN
+  </label>
+
+  <input
+    type="text"
+    id="fuelPromiseDcnInput"
+    name="fuelPromiseDcn"
+    maxlength="100"
+    placeholder="Optional"
+  />
+</div>
+
+<!-- CCID -->
+<div
+  class="cat-field"
+  id="fuelPromiseCcidFieldWrapper"
+>
+  <label for="fuelPromiseCcidInput">
+    CCID
+  </label>
+
+  <input
+    type="text"
+    id="fuelPromiseCcidInput"
+    name="fuelPromiseCcid"
+    maxlength="100"
+    placeholder="Optional"
+  />
+</div>
+
+
+<!-- VisionLink conditional fields -->
+
+<!-- Asset ID/Serial Number(s) -->
+<div
+  class="cat-field"
+  id="visionLinkSerialNumberFieldWrapper"
+>
+  <label for="visionLinkSerialNumberInput">
+    Asset ID/Serial Number(s)
+  </label>
+
+  <textarea
+    id="visionLinkSerialNumberInput"
+    name="cat_visionlinkserialnumbers"
+    rows="3"
+    maxlength="1000"
+    placeholder="Enter one or more serial numbers"
+  ></textarea>
+</div>
+
+<!-- Equipment Type -->
+<div
+  class="cat-field"
+  id="visionLinkEquipmentTypeFieldWrapper"
+>
+  <label for="visionLinkEquipmentTypeInput">
+    Equipment Type
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="visionLinkEquipmentTypeInput"
+      class="lookup-input"
+      placeholder="Select Equipment Type"
+    />
+
+    <div
+      class="lookup-arrow visionlink-equipment-type-arrow"
+    >
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="visionLinkEquipmentTypeResults"
+    ></div>
+
+    <select
+      id="visionLinkEquipmentTypeSelect"
+      name="cat_visionlinkequipmenttype"
+      style="display:none;"
+    >
+      <option value="">
+        Select Equipment Type
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- VisionLink Industry -->
+<div
+  class="cat-field"
+  id="visionLinkIndustryFieldWrapper"
+>
+  <label for="visionLinkIndustryInput">
+    Industry
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="visionLinkIndustryInput"
+      class="lookup-input"
+      placeholder="Select Industry"
+    />
+
+    <div
+      class="lookup-arrow vision-link-industry-arrow"
+    >
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="visionLinkIndustryResults"
+    ></div>
+
+    <select
+      id="visionLinkIndustrySelect"
+      name="visionLinkIndustry"
+      style="display:none;"
+    >
+      <option value="">
+        Select Industry
+      </option>
+
+      <option value="Construction Industries">
+        Construction Industries
+      </option>
+
+      <option value="Electric Power">
+        Electric Power
+      </option>
+
+      <option value="Electrification">
+        Electrification
+      </option>
+
+      <option value="Marine">
+        Marine
+      </option>
+
+      <option value="Mining">
+        Mining
+      </option>
+
+      <option value="Agriculture">
+        Agriculture
+      </option>
+
+      <option value="Heavy Construction">
+        Heavy Construction
+      </option>
+
+      <option value="General Construction">
+        General Construction
+      </option>
+
+      <option value="Waste">
+        Waste
+      </option>
+
+      <option value="Quarry &amp; Aggregates">
+        Quarry &amp; Aggregates
+      </option>
+
+      <option value="Forestry">
+        Forestry
+      </option>
+
+      <option value="Oil &amp; Gas">
+        Oil &amp; Gas
+      </option>
+
+      <option value="Industrial">
+        Industrial
+      </option>
+
+      <option value="Rental">
+        Rental
+      </option>
+
+      <option value="Retail">
+        Retail
+      </option>
+
+      <option value="Power Generation">
+        Power Generation
+      </option>
+
+      <option value="Energy &amp; Transportation">
+        Energy &amp; Transportation
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- VisionLink Product Link Device Model -->
+<div
+  class="cat-field"
+  id="visionLinkDeviceModelFieldWrapper"
+>
+  <label for="visionLinkDeviceModelInput">
+    Product Link Device Model
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="visionLinkDeviceModelInput"
+      class="lookup-input"
+      placeholder="Select Device Model"
+    />
+
+    <div
+      class="lookup-arrow vision-link-device-model-arrow"
+    >
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="visionLinkDeviceModelResults"
+    ></div>
+
+    <select
+      id="visionLinkDeviceModelSelect"
+      name="cat_provideddevicemodel"
+      style="display:none;"
+    >
+      <option value="">
+        Select Device Model
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- What data is incorrect? -->
+<div
+  class="cat-field"
+  id="visionLinkDataPointFieldWrapper"
+>
+  <label for="visionLinkDataPointInput">
+    What data is incorrect?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="visionLinkDataPointInput"
+      class="lookup-input"
+      placeholder="Select Data"
+    />
+
+    <div class="lookup-arrow visionlink-data-point-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="visionLinkDataPointResults"
+    ></div>
+
+    <select
+      id="visionLinkDataPointSelect"
+      name="cat_data_point"
+      style="display:none;"
+    >
+      <option value="">Select Data</option>
+      <option value="100000000">Asset Operation</option>
+      <option value="100000001">Fault Codes</option>
+      <option value="100000002">Fluid Analysis</option>
+      <option value="100000003">Geofences</option>
+      <option value="100000004">Hours</option>
+      <option value="100000005">Location</option>
+      <option value="100000006">Utilization</option>
+      <option value="100000007">Other</option>
+    </select>
+  </div>
+</div>
+
+<!-- Product Link Device Serial Number -->
+<div
+  class="cat-field"
+  id="visionLinkDeviceSerialFieldWrapper"
+>
+  <label for="visionLinkDeviceSerialInput">
+    Product Link Device Serial Number
+  </label>
+
+  <input
+    type="text"
+    id="visionLinkDeviceSerialInput"
+    name="cat_provideddeviceserialnumber"
+    maxlength="100"
+    placeholder="Optional"
+  />
+</div>
+
+
+
+<!-- Cat Product Link conditional fields -->
+
+<!-- Product Link Device Model -->
+<div class="cat-field" id="productLinkDeviceModelFieldWrapper">
+  <label for="productLinkDeviceModelInput">
+    Product Link Device Model
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="productLinkDeviceModelInput"
+      class="lookup-input"
+      placeholder="Select Device Model"
+    />
+
+    <div class="lookup-arrow product-link-device-model-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="productLinkDeviceModelResults"
+    ></div>
+
+    <select
+      id="productLinkDeviceModelSelect"
+      name="cat_provideddevicemodel"
+      style="display:none;"
+    >
+      <option value="">Select Device Model</option>
+    </select>
+  </div>
+</div>
+
+<!-- What data is incorrect? -->
+<div class="cat-field" id="productLinkDataPointFieldWrapper">
+  <label for="productLinkDataPointInput">
+    What data is incorrect?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="productLinkDataPointInput"
+      class="lookup-input"
+      placeholder="Select Data"
+    />
+
+    <div class="lookup-arrow product-link-data-point-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="productLinkDataPointResults"
+    ></div>
+
+    <select
+      id="productLinkDataPointSelect"
+      name="cat_datapoint"
+      style="display:none;"
+    >
+      <option value="">Select Data</option>
+      <option value="100000000">Asset Operation</option>
+      <option value="100000001">Fault Codes</option>
+      <option value="100000002">Fluid Analysis</option>
+      <option value="100000003">Geofences</option>
+      <option value="100000004">Hours</option>
+      <option value="100000005">Location</option>
+      <option value="100000006">Utilization</option>
+      <option value="100000007">Other</option>
+    </select>
+  </div>
+</div>
+
+<!-- Where are you seeing incorrect data? -->
+<div
+  class="cat-field"
+  id="productLinkIncorrectDataLocationFieldWrapper"
+>
+  <label for="productLinkIncorrectDataLocationInput">
+    Where are you seeing incorrect data?
+  </label>
+
+  <input
+    type="text"
+    id="productLinkIncorrectDataLocationInput"
+    name="cat_productlinkincorrectdatalocation"
+    maxlength="500"
+  />
+</div>
+
+
+
+<!-- What best describes your issue? -->
+<div class="cat-field" id="dspBestDescribesFieldWrapper">
+  <label for="dspBestDescribesInput">
+    What best describes your issue?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="dspBestDescribesInput"
+      class="lookup-input"
+      placeholder="Select Option"
+    />
+
+    <div class="lookup-arrow dsp-best-describes-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="dspBestDescribesResults"
+    ></div>
+
+    <select
+      id="dspBestDescribesSelect"
+      name="cat_whatbestdescribesyourissue"
+      style="display:none;"
+    >
+      <option value="">Select Option</option>
+
+      <option value="100000018">
+        Grade Device Serial Number not shown
+      </option>
+
+      <option value="100000019">
+        Grade Devices Show No Upgrade Available
+      </option>
+
+      <option value="100000020">
+        I Cannot See Grade Control Systems in DSP
+      </option>
+
+      <option value="100000021">
+        License Did not get Applied over the Air
+      </option>
+
+      <option value="100000022">
+        License Did not Work Onboard
+      </option>
+
+      <option value="100000023">
+        Something Else
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- Asset ID/Serial Number(s) -->
+<div class="cat-field" id="dspSerialNumberFieldWrapper">
+  <label for="dspSerialNumberInput">
+    Asset ID/Serial Number(s)
+  </label>
+
+  <textarea
+    id="dspSerialNumberInput"
+    name="cat_dspserialnumbers"
+    rows="3"
+    maxlength="1000"
+    placeholder="Enter one or more serial numbers"
+  ></textarea>
+</div>
+
+<!-- Invoice Number or Credit Memo Number -->
+<div class="cat-field" id="dspInvoiceCreditMemoFieldWrapper">
+  <label for="dspInvoiceCreditMemoInput">
+    Invoice # or Credit Memo #
+  </label>
+
+  <input
+    type="text"
+    id="dspInvoiceCreditMemoInput"
+    name="cat_dspinvoicecreditmemo"
+    maxlength="250"
+  />
+</div>
+
+<!-- Product Link Device Model -->
+<div class="cat-field" id="dspDeviceModelFieldWrapper">
+  <label for="dspDeviceModelInput">
+    Product Link Device Model
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="dspDeviceModelInput"
+      class="lookup-input"
+      placeholder="Select Device Model"
+    />
+
+    <div class="lookup-arrow dsp-device-model-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="dspDeviceModelResults"
+    ></div>
+
+    <select
+      id="dspDeviceModelSelect"
+      name="cat_provideddevicemodel"
+      style="display:none;"
+    >
+      <option value="">Select Device Model</option>
+    </select>
+  </div>
+</div>
+
+<!-- Product Link Device Serial Number -->
+<div
+  class="cat-field"
+  id="dspDeviceSerialNumberFieldWrapper"
+>
+  <label for="dspDeviceSerialNumberInput">
+    Product Link Device Serial Number
+  </label>
+
+  <input
+    type="text"
+    id="dspDeviceSerialNumberInput"
+    name="cat_provideddeviceserialnumber"
+    maxlength="100"
+  />
+</div>
+
+<!-- What data is incorrect? -->
+<div class="cat-field" id="dspDataIncorrectFieldWrapper">
+  <label for="dspDataIncorrectInput">
+    What data is incorrect?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="dspDataIncorrectInput"
+      class="lookup-input"
+      placeholder="Select Data"
+    />
+
+    <div class="lookup-arrow dsp-data-incorrect-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="dspDataIncorrectResults"
+    ></div>
+
+    <select
+  id="dspDataIncorrectSelect"
+  name="cat_datapoint"
+  style="display:none;"
+>
+  <option value="">Select Data</option>
+  <option value="100000000">Asset Operation</option>
+  <option value="100000001">Fault Codes</option>
+  <option value="100000002">Fluid Analysis</option>
+  <option value="100000003">Geofences</option>
+  <option value="100000004">Hours</option>
+  <option value="100000005">Location</option>
+  <option value="100000006">Utilization</option>
+  <option value="100000007">Other</option>
+</select>
+
+  </div>
+</div>
+
+<!-- Industry -->
+<div class="cat-field" id="dspIndustryFieldWrapper">
+  <label for="dspIndustryInput">
+    Industry
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="dspIndustryInput"
+      class="lookup-input"
+      placeholder="Select Industry"
+    />
+
+    <div class="lookup-arrow dsp-industry-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="dspIndustryResults"
+    ></div>
+
+    <select
+  id="dspIndustrySelect"
+  name="dspIndustry"
+  style="display:none;"
+>
+  <option value="">
+    Select Industry
+  </option>
+
+  <option value="Construction">
+    Construction
+  </option>
+
+  <option value="Electrification">
+    Electrification
+  </option>
+
+  <option value="Marine">
+    Marine
+  </option>
+
+  <option value="Mining">
+    Mining
+  </option>
+</select>
+  </div>
+</div>
+
+  <!-- <small class="cat-subtext">
+    Please include any related screenshots or attachments for faster processing.
+  </small> -->
+
+  <!-- What is the app version? — only shown when "Cat Central" is selected above -->
+  <div class="cat-field" id="appVersionFieldWrapper">
+    <label for="appVersionInput">
+  What is the app version?
+  <span class="cat-description-help-wrapper" data-cat-field-help>
+    <button
+      type="button"
+      id="appVersionHelpButton"
+      class="cat-description-help-button"
+      aria-label="Help for What is the app version?"
+      aria-controls="appVersionHelpText"
+      aria-expanded="false"
+    >
+   <img
+  src="info-filled.png"
+  class="cat-description-help-icon"
+  alt=""
+  aria-hidden="true"
+  style="width:14px; height:14px; display:block;"
+/>
+</button>
+    <span
+      id="appVersionHelpText"
+      class="cat-description-help-text"
+      role="tooltip"
+    >
+      Example 4.4 Can we enforce standard app version formatting?
+    </span>
+  </span>
+</label>
+    <input type="text" id="appVersionInput" name="cat_appversion" placeholder="e.g. 4.4" aria-describedby="appVersionHelpText">
+  </div>
+
+<!-- Customer Email Address — only shown when "Cat Central" is selected above -->
+  <div class="cat-field" id="customerEmailFieldWrapper">
+    <label for="customerEmailInput">
+  Customer Email Address
+  <span class="cat-description-help-wrapper" data-cat-field-help>
+    <button
+      type="button"
+      id="customerEmailHelpButton"
+      class="cat-description-help-button"
+      aria-label="Help for Customer Email Address"
+      aria-controls="customerEmailHelpText"
+      aria-expanded="false"
+    >
+      <img
+  src="info-filled.png"
+  class="cat-description-help-icon"
+  alt=""
+  aria-hidden="true"
+  style="width:14px; height:14px; display:block;"
+/>
+    </button>
+    <span
+      id="customerEmailHelpText"
+      class="cat-description-help-text"
+      role="tooltip"
+    >
+      Please encourage your customer to submit a shakelog
+    </span>
+  </span>
+</label>
+    <input type="text" id="customerEmailInput" name="cat_customeremailaddress" aria-describedby="customerEmailHelpText">
+  </div>
+
+
+<!-- Asset ID/Serial Number - Cat Foresight -->
+<div class="cat-field" id="foresightSerialNumberFieldWrapper">
+  <label for="foresightSerialNumberInput">
+    Asset ID/Serial Number
+  </label>
+
+  <textarea
+    id="foresightSerialNumberInput"
+    name="cat_foresightserialnumbers"
+    rows="3"
+    maxlength="1000"
+    placeholder="Enter one or more serial numbers"
+  ></textarea>
+</div>
+
+<!-- CCID - Cat Foresight -->
+<div class="cat-field" id="foresightCcidFieldWrapper">
+  <label for="foresightCcidInput">
+    CCID
+  </label>
+
+  <input
+    type="text"
+    id="foresightCcidInput"
+    name="cat_foresightccid"
+    maxlength="100"
+  />
+</div>
+
+<!-- User Email - Cat Foresight -->
+<div class="cat-field" id="foresightUserEmailFieldWrapper">
+  <label for="foresightUserEmailInput">
+    User Email
+  </label>
+
+  <input
+    type="email"
+    id="foresightUserEmailInput"
+    name="cat_foresightuseremail"
+  />
+</div>
+
+<!-- URL — only shown when "Cat Foresight" is selected -->
+  <div class="cat-field" id="urlFieldWrapper">
+    <label for="urlInput">
+  URL
+  <span class="cat-description-help-wrapper" data-cat-field-help>
+    <button
+      type="button"
+      id="urlHelpButton"
+      class="cat-description-help-button"
+      aria-label="Help for URL"
+      aria-controls="urlHelpText"
+      aria-expanded="false"
+    >
+      <img
+  src="info-filled.png"
+  class="cat-description-help-icon"
+  alt=""
+  aria-hidden="true"
+  style="width:14px; height:14px; display:block;"
+/>
+    </button>
+    <span
+      id="urlHelpText"
+      class="cat-description-help-text"
+      role="tooltip"
+    >
+      Please provide the URL of the window where you are experiencing the issue.
+    </span>
+  </span>
+</label>
+    <input type="text" id="urlInput" name="cat_url" aria-describedby="urlHelpText">
+  </div>
+<!-- Date & Time Issue Occurred - Cat Foresight -->
+<div class="cat-field" id="foresightIssueDateTimeFieldWrapper">
+  <label for="foresightIssueDateTimeInput">
+    Date &amp; Time Issue Occurred
+  </label>
+
+  <input
+    type="datetime-local"
+    id="foresightIssueDateTimeInput"
+    name="cat_foresightissuedatetime"
+  />
+</div>
+
+<!-- =====================================================
+     SOS SERVICES CONDITIONAL FIELDS
+===================================================== -->
+
+<!-- CCID - always shown for SOS Services -->
+<div class="cat-field" id="sosCcidFieldWrapper">
+  <label for="sosCcidInput">
+    CCID
+  </label>
+
+  <input
+    type="text"
+    id="sosCcidInput"
+    name="cat_sosccid"
+    maxlength="100"
+  />
+</div>
+
+<!-- User Profile to Mirror -->
+<div class="cat-field" id="sosUserProfileFieldWrapper">
+  <label for="sosUserProfileInput">
+    User Profile to Mirror
+  </label>
+
+  <input
+    type="text"
+    id="sosUserProfileInput"
+    name="cat_sosuserprofile"
+    maxlength="250"
+  />
+</div>
+
+<!-- Asset ID/Serial Number(s) -->
+<div class="cat-field" id="sosSerialNumberFieldWrapper">
+  <label for="sosSerialNumberInput">
+    Asset ID/Serial Number(s)
+  </label>
+
+  <textarea
+    id="sosSerialNumberInput"
+    name="cat_sosserialnumbers"
+    rows="3"
+    maxlength="1000"
+    placeholder="Enter one or more serial numbers"
+  ></textarea>
+</div>
+
+<!-- Number of Samples -->
+<div class="cat-field" id="sosNumberOfSamplesFieldWrapper">
+  <label for="sosNumberOfSamplesInput">
+    Number of Samples
+  </label>
+
+  <input
+    type="number"
+    id="sosNumberOfSamplesInput"
+    name="cat_sosnumberofsamples"
+    min="1"
+    step="1"
+  />
+</div>
+
+<!-- Instrument Vendor -->
+<div class="cat-field" id="sosInstrumentVendorFieldWrapper">
+  <label for="sosInstrumentVendorInput">
+    Instrument Vendor
+  </label>
+
+  <input
+    type="text"
+    id="sosInstrumentVendorInput"
+    name="cat_sosinstrumentvendor"
+    maxlength="250"
+  />
+</div>
+
+<!-- Instrument Model -->
+<div class="cat-field" id="sosInstrumentModelFieldWrapper">
+  <label for="sosInstrumentModelInput">
+    Instrument Model
+  </label>
+
+  <input
+    type="text"
+    id="sosInstrumentModelInput"
+    name="cat_sosinstrumentmodel"
+    maxlength="250"
+  />
+</div>
+
+<!-- Test/Analysis -->
+<div class="cat-field" id="sosTestAnalysisFieldWrapper">
+  <label for="sosTestAnalysisInput">
+    Test/Analysis
+  </label>
+
+  <input
+    type="text"
+    id="sosTestAnalysisInput"
+    name="cat_sostestanalysis"
+    maxlength="250"
+  />
+</div>
+
+<!-- Fluid Brand -->
+<div class="cat-field" id="sosFluidBrandFieldWrapper">
+  <label for="sosFluidBrandInput">
+    Fluid Brand
+  </label>
+
+  <input
+    type="text"
+    id="sosFluidBrandInput"
+    name="cat_sosfluidbrand"
+    maxlength="250"
+  />
+</div>
+
+<!-- Fluid Type -->
+<div class="cat-field" id="sosFluidTypeFieldWrapper">
+  <label for="sosFluidTypeInput">
+    Fluid Type
+  </label>
+
+  <input
+    type="text"
+    id="sosFluidTypeInput"
+    name="cat_sosfluidtype"
+    maxlength="250"
+  />
+</div>
+
+<!-- Fluid Weight -->
+<div class="cat-field" id="sosFluidWeightFieldWrapper">
+  <label for="sosFluidWeightInput">
+    Fluid Weight
+  </label>
+
+  <input
+    type="text"
+    id="sosFluidWeightInput"
+    name="cat_sosfluidweight"
+    maxlength="250"
+  />
+</div>
+
+<!-- Cat Model -->
+<div class="cat-field" id="sosCatModelFieldWrapper">
+  <label for="sosCatModelInput">
+    Cat Model
+  </label>
+
+  <input
+    type="text"
+    id="sosCatModelInput"
+    name="cat_soscatmodel"
+    maxlength="250"
+  />
+</div>
+
+<!-- Serial Number Prefix -->
+<div class="cat-field" id="sosSerialPrefixFieldWrapper">
+  <label for="sosSerialPrefixInput">
+    Serial Number Prefix
+  </label>
+
+  <input
+    type="text"
+    id="sosSerialPrefixInput"
+    name="cat_sosserialprefix"
+    maxlength="100"
+  />
+</div>
+
+<!-- Component -->
+<div class="cat-field" id="sosComponentFieldWrapper">
+  <label for="sosComponentInput">
+    Component
+  </label>
+
+  <input
+    type="text"
+    id="sosComponentInput"
+    name="cat_soscomponent"
+    maxlength="250"
+  />
+</div>
+
+
+
+<div class="cat-field" id="sosWebApplicationPageFieldWrapper">
+  <label for="sosWebApplicationPageInput">Application Page</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="sosWebApplicationPageInput" class="lookup-input" placeholder="Select Application Page" />
+    <div class="lookup-arrow sos-web-application-page-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="sosWebApplicationPageResults"></div>
+    <select id="sosWebApplicationPageSelect" style="display:none;">
+      <option value="">Select Application Page</option>
+      <option value="Dashboard">Dashboard</option>
+      <option value="Fleet">Fleet</option>
+      <option value="Fleet Details">Fleet Details</option>
+      <option value="Sample">Sample</option>
+      <option value="Sample Details">Sample Details</option>
+      <option value="Submit">Submit</option>
+      <option value="Reports">Reports</option>
+      <option value="Preferences">Preferences</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+</div>
+
+<div class="cat-field" id="sosWebSerialNumberFieldWrapper">
+  <label for="sosWebSerialNumberInput">Asset ID/Serial Number(s)</label>
+  <textarea id="sosWebSerialNumberInput" rows="3" maxlength="1000" placeholder="Enter one or more serial numbers"></textarea>
+</div>
+
+<div class="cat-field" id="sosWebTextIdsFieldWrapper">
+  <label for="sosWebTextIdsInput">Text ID(s)</label>
+  <input type="text" id="sosWebTextIdsInput" maxlength="250" />
+</div>
+
+<div class="cat-field" id="sosWebServerFieldWrapper">
+  <label for="sosWebServerInput">Server</label>
+  <input type="text" id="sosWebServerInput" maxlength="250" />
+</div>
+
+<div class="cat-field" id="sosWebSerialPrefixFieldWrapper">
+  <label for="sosWebSerialPrefixInput">Serial Number Prefix</label>
+  <input type="text" id="sosWebSerialPrefixInput" maxlength="250" />
+</div>
+
+<div class="cat-field" id="sosWebCatModelFieldWrapper">
+  <label for="sosWebCatModelInput">Cat Model</label>
+  <input type="text" id="sosWebCatModelInput" maxlength="250" />
+</div>
+
+<div class="cat-field" id="sosWebComponentFieldWrapper">
+  <label for="sosWebComponentInput">Component</label>
+  <input type="text" id="sosWebComponentInput" maxlength="250" />
+</div>
+
+<!-- URL - only shown for OneSite -->
+<div class="cat-field" id="oneSiteUrlFieldWrapper">
+  <label for="oneSiteUrlInput">
+    URL
+  </label>
+
+  <input
+    type="text"
+    id="oneSiteUrlInput"
+    name="cat_onesiteurl"
+    placeholder="Enter URL"
+  />
+</div>
+
+<!-- =====================================================
+     CAT DEALER CONDITIONAL FIELDS
+===================================================== -->
+
+<!-- URL - always shown for Cat Dealer -->
+<div class="cat-field" id="dealerUrlFieldWrapper">
+  <label for="dealerUrlInput">URL</label>
+  <input
+    type="text"
+    id="dealerUrlInput"
+    name="cat_dealerurl"
+    placeholder="Enter URL"
+  />
+</div>
+
+<!-- Error Message Displayed -->
+<div class="cat-field" id="dealerErrorMessageFieldWrapper">
+  <label for="dealerErrorMessageInput">Error Message Displayed</label>
+  <input
+    type="text"
+    id="dealerErrorMessageInput"
+    name="cat_dealererrormessage"
+    maxlength="1000"
+    placeholder="Enter Error Message"
+  />
+</div>
+
+<!-- Which Site Update is Needed -->
+<div class="cat-field" id="dealerSiteUpdateFieldWrapper">
+  <label for="dealerSiteUpdateInput">Which Site Update is Needed</label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="dealerSiteUpdateInput"
+      class="lookup-input"
+      placeholder="Select Option"
+    />
+
+    <div class="lookup-arrow dealer-site-update-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div class="lookup-results" id="dealerSiteUpdateResults"></div>
+
+    <select
+      id="dealerSiteUpdateSelect"
+      name="cat_dealersiteupdate"
+      style="display:none;"
+    >
+      <option value="">Select Option</option>
+      <option value="Catdealer.com Communication Newsletter Additions">Catdealer.com Communication Newsletter Additions</option>
+      <option value="Content Deactivation">Content Deactivation</option>
+      <option value="Content Update">Content Update</option>
+      <option value="New Content">New Content</option>
+    </select>
+  </div>
+</div>
+
+<!-- Inspection Number -->
+<div class="cat-field" id="inspectNumberFieldWrapper">
+  <label for="inspectNumberInput">Inspection Number</label>
+  <input
+    type="text"
+    id="inspectNumberInput"
+    placeholder="Enter Inspection Number"
+    maxlength="100"
+  />
+</div>
+
+{% unless productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- What Type of Inspection -->
+<div class="cat-field" id="inspectTypeFieldWrapper">
+  <label for="inspectTypeInput">What Type of Inspection</label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="inspectTypeInput"
+      class="lookup-input"
+      placeholder="Select Option"
+    />
+
+    <div class="lookup-arrow inspect-type-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div class="lookup-results" id="inspectTypeResults"></div>
+
+    <select id="inspectTypeSelect" style="display:none;">
+      <option value="">Select Option</option>
+      <option value="Cat® Inspect">Cat® Inspect</option>
+      <option value="Cat® Wear Management System">Cat® Wear Management System</option>
+      <option value="Cat® Used">Cat® Used</option>
+    </select>
+  </div>
+</div>
+{% endunless %}
+
+<!-- Is this Impacting Multiple Assets? -->
+<div class="cat-field" id="inspectMultipleAssetsFieldWrapper">
+  <label>Is this Impacting Multiple Assets?</label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input type="radio" name="inspectMultipleAssets" id="inspectMultipleAssetsYes" value="Yes" />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input type="radio" name="inspectMultipleAssets" id="inspectMultipleAssetsNo" value="No" />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- =====================================================
+     CAT RENTALS CONDITIONAL FIELDS
+===================================================== -->
+
+<!-- URL -->
+<div class="cat-field" id="rentalsUrlFieldWrapper">
+  <label for="rentalsUrlInput">URL</label>
+  <input type="text" id="rentalsUrlInput" placeholder="Enter URL" maxlength="250" />
+</div>
+
+<!-- Rented or Owned Machine -->
+<div class="cat-field" id="rentalsRentedOwnedFieldWrapper">
+  <label>Rented or Owned Machine</label>
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input type="radio" name="rentalsRentedOwned" id="rentalsRentedOwnedRented" value="Rented" />
+      <span>Rented</span>
+    </label>
+    <label class="cat-radio-option">
+      <input type="radio" name="rentalsRentedOwned" id="rentalsRentedOwnedOwned" value="Owned" />
+      <span>Owned</span>
+    </label>
+  </div>
+</div>
+
+<!-- Jobsite Address -->
+<div class="cat-field" id="rentalsJobsiteAddressFieldWrapper">
+  <label for="rentalsJobsiteAddressInput">Jobsite Address</label>
+  <input type="text" id="rentalsJobsiteAddressInput" placeholder="Enter Jobsite Address" maxlength="250" />
+</div>
+
+<!-- Equipment Type -> Asset.cat_EquipmentType -->
+<div class="cat-field" id="rentalsEquipmentTypeFieldWrapper">
+  <label for="rentalsEquipmentTypeInput">Equipment Type</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="rentalsEquipmentTypeInput" class="lookup-input" placeholder="Select Option" />
+    <div class="lookup-arrow rentals-equipment-type-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="rentalsEquipmentTypeResults"></div>
+    <select id="rentalsEquipmentTypeSelect" style="display:none;">
+      <option value="">Select Option</option>
+      <option value="100000000">Accommodation</option>
+      <option value="100000001">Air Conditioners</option>
+      <option value="100000002">Aluminum Trench Boxes</option>
+      <option value="100000003">Arrow Panels</option>
+      <option value="100000004">Articulated Trucks</option>
+      <option value="100000005">Asphalt Pavers</option>
+      <option value="100000006">Augers</option>
+      <option value="100000007">Backhoe Loaders</option>
+      <option value="100000008">Bedding Boxes</option>
+      <option value="100000009">Blades</option>
+      <option value="100000010">Boom Lifts</option>
+      <option value="100000011">Brooms</option>
+      <option value="100000012">Brush Chippers</option>
+      <option value="100000013">Buckets - Backhoe Rear</option>
+      <option value="100000014">Buckets - Excavator</option>
+      <option value="100000015">Buckets - Loader</option>
+      <option value="100000016">Buckets - Skid Steer Loader</option>
+      <option value="100000017">Buckets - Telehandler</option>
+      <option value="100000018">Cold Planers</option>
+      <option value="100000019">Cold-Water Pressure Washers</option>
+      <option value="100000020">Compact Track and Multi Terrain Loaders</option>
+      <option value="100000021">TODO_MISSING_LABEL</option>
+      <option value="100000022">Compact Utility Equipment</option>
+      <option value="100000023">Compactors</option>
+      <option value="100000024">Concrete Buggies</option>
+      <option value="100000025">Containers</option>
+      <option value="100000026">Core Drills</option>
+      <option value="100000027">Cranes</option>
+      <option value="100000028">Dozers</option>
+      <option value="100000029">Drum Cutters</option>
+      <option value="100000030">Dump Trucks</option>
+      <option value="100000031">Electric Heaters</option>
+      <option value="100000032">Electric Power Generators</option>
+      <option value="100000033">Electric Tools</option>
+      <option value="100000034">Excavators</option>
+      <option value="100000035">Floor Scrubbers</option>
+      <option value="100000036">Forced Air Heaters</option>
+      <option value="100000037">Forklifts: Straight Mast</option>
+      <option value="100000038">Forks</option>
+      <option value="100000039">Gas Tools</option>
+      <option value="100000040">General Construction Lasers</option>
+      <option value="100000041">Ground Thaw</option>
+      <option value="100000042">Ground Thaw Heaters</option>
+      <option value="100000043">Hammers</option>
+      <option value="100000044">Handheld Cut-off Saws</option>
+      <option value="100000045">Hot-Water Pressure Washers</option>
+      <option value="100000046">Interior Lasers</option>
+      <option value="100000047">Light Towers</option>
+      <option value="100000048">Machine Display Receivers</option>
+      <option value="100000049">Material Handling Arms</option>
+      <option value="100000050">Material Lifts</option>
+      <option value="100000051">Mini Excavators</option>
+      <option value="100000052">Miscellaneous Attachments</option>
+      <option value="100000053">Miscellaneous Products</option>
+      <option value="100000054">Mixers</option>
+      <option value="100000055">Mobile Generator Sets</option>
+      <option value="100000056">Mortar Mixers</option>
+      <option value="100000057">Motor Graders</option>
+      <option value="100000058">Pad Foot Compactors</option>
+      <option value="100000059">Personnel Carts</option>
+      <option value="100000060">Pipelaying/Underground Lasers</option>
+      <option value="100000061">Plate Compactors</option>
+      <option value="100000062">Pneumatic Rollers</option>
+      <option value="100000063">Pneumatic Tolls</option>
+      <option value="100000064">Portable Air Compressors</option>
+      <option value="100000065">Portable Generators</option>
+      <option value="100000066">Portable Welders</option>
+      <option value="100000067">Pump Equipment</option>
+      <option value="100000068">Rakes</option>
+      <option value="100000069">Rammers</option>
+      <option value="100000070">Ride-On Brooms</option>
+      <option value="100000071">Ride-On Rollers</option>
+      <option value="100000072">Ride-On Trenchers</option>
+      <option value="100000073">Rippers</option>
+      <option value="100000074">Road Reclaimers</option>
+      <option value="100000075">Road Wideners</option>
+      <option value="100000076">Sanitation/Portable Toilets</option>
+      <option value="100000077">Scissor Lifts</option>
+      <option value="100000078">Site Dumpers</option>
+      <option value="100000079">Skid Steer Loaders</option>
+      <option value="100000080">Smooth Compactors</option>
+      <option value="100000081">Soil Compactors</option>
+      <option value="100000082">Stationary Air Compressors</option>
+      <option value="100000083">Stell Manhole Boxes</option>
+      <option value="100000084">Stump Grinders</option>
+      <option value="100000085">Tandem Vibratory Rollers</option>
+      <option value="100000086">Telehandlers</option>
+      <option value="100000087">Telehandlers (Large Capacity)</option>
+      <option value="100000088">Thumbs</option>
+      <option value="100000089">Tile Saws</option>
+      <option value="100000090">Towable Welders</option>
+      <option value="100000091">Track Loaders</option>
+      <option value="100000092">Track Pads</option>
+      <option value="100000093">Trailers</option>
+      <option value="100000094">Trenchers</option>
+      <option value="100000095">Trommels</option>
+      <option value="100000096">Truss Booms</option>
+      <option value="100000097">Utility Equipment Trailers</option>
+      <option value="100000098">Utility Vehicles</option>
+      <option value="100000099">Variable Message Boards</option>
+      <option value="100000100">Vertical Personnel Lifts</option>
+      <option value="100000101">Vibratory Soil Compactors</option>
+      <option value="100000102">Walk-Behind Concrete Saws</option>
+      <option value="100000103">Walk-Behind Power Trowels</option>
+      <option value="100000104">Walk-Behind Rollers</option>
+      <option value="100000105">Walk-Behind Sweepers/Scrubbers</option>
+      <option value="100000106">Walk-Behind Trenchers</option>
+      <option value="100000107">Water Trailers</option>
+      <option value="100000108">Water Trucks</option>
+      <option value="100000109">Wheel Excavators</option>
+      <option value="100000110">Wheel Loaders</option>
+      <option value="100000111">Wheel Tractor-Scrapers</option>
+      <option value="100000112">Wheeled Tractors</option>
+      <option value="100000113">Worksite Shelters on Wheels</option>
+      <option value="100000114">Other</option>
+    </select>
+  </div>
+</div>
+
+<!-- Product Family -> Asset.cat_ProductFamily -->
+<div class="cat-field" id="rentalsProductFamilyFieldWrapper">
+  <label for="rentalsProductFamilyInput">Product Family</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="rentalsProductFamilyInput" class="lookup-input" placeholder="Select Option" />
+    <div class="lookup-arrow rentals-product-family-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="rentalsProductFamilyResults"></div>
+    <select id="rentalsProductFamilySelect" style="display:none;">
+      <option value="">Select Option</option>
+      <option value="100000000">Aerial Equipment</option>
+      <option value="100000001">Air Equipment</option>
+      <option value="100000002">Attachments</option>
+      <option value="100000003">Compaction Equipment</option>
+      <option value="100000004">Concrete Equipment</option>
+      <option value="100000005">Earthmoving Equipment</option>
+      <option value="100000006">HVAC</option>
+      <option value="100000007">Landscaping Equipment</option>
+      <option value="100000008">Light Towers</option>
+      <option value="100000009">Material Handling Equipment</option>
+      <option value="100000010">Miscellaneous Equipment</option>
+      <option value="100000011">Power Generation</option>
+      <option value="100000012">Pump Equipment</option>
+      <option value="100000013">Roadwork Equipment</option>
+      <option value="100000014">Trench Shoring</option>
+      <option value="100000015">Trucks and Trailers</option>
+      <option value="100000016">Water Equipment</option>
+      <option value="100000017">Other</option>
+    </select>
+  </div>
+</div>
+
+<!-- Generator Size -> Asset.cat_GeneratorSize -->
+<div class="cat-field" id="rentalsGeneratorSizeFieldWrapper">
+  <label for="rentalsGeneratorSizeInput">Generator Size</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="rentalsGeneratorSizeInput" class="lookup-input" placeholder="Select Option" />
+    <div class="lookup-arrow rentals-generator-size-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="rentalsGeneratorSizeResults"></div>
+    <select id="rentalsGeneratorSizeSelect" style="display:none;">
+      <option value="">Select Option</option>
+      <option value="100000000">0-250 kW</option>
+      <option value="100000001">+1000 kW</option>
+      <option value="100000002">250-500 kW</option>
+      <option value="100000003">500-1000 kW</option>
+      <option value="100000004">Unknown</option>
+    </select>
+  </div>
+</div>
+
+<!-- Start Date -> Asset.cat_StartDate -->
+<div class="cat-field" id="rentalsStartDateFieldWrapper">
+  <label for="rentalsStartDateInput">Start Date</label>
+  <input type="date" id="rentalsStartDateInput" />
+</div>
+
+<!-- End Date -> Asset.cat_EndDate -->
+<div class="cat-field" id="rentalsEndDateFieldWrapper">
+  <label for="rentalsEndDateInput">End Date</label>
+  <input type="date" id="rentalsEndDateInput" />
+</div>
+
+<!-- Contract/Invoice Number -->
+<div class="cat-field" id="rentalsContractInvoiceFieldWrapper">
+  <label for="rentalsContractInvoiceInput">Contract/Invoice Number</label>
+  <input type="text" id="rentalsContractInvoiceInput" placeholder="Enter Contract/Invoice Number" maxlength="100" />
+</div>
+
+{% unless productPersona == 'Customer' or productPersona == 'Guest' %}
+
+<!-- Request/Lead ID Number -->
+<div class="cat-field" id="rentalsDealerRequestLeadIdFieldWrapper">
+  <label for="rentalsDealerRequestLeadIdInput">Request/Lead ID Number</label>
+  <input type="text" id="rentalsDealerRequestLeadIdInput" placeholder="Enter Request/Lead ID Number" maxlength="100" />
+</div>
+
+<!-- Asset ID/Serial Number -->
+<div class="cat-field" id="rentalsDealerAssetIdFieldWrapper">
+  <label for="rentalsDealerAssetIdInput">Asset ID/Serial Number</label>
+  <input type="text" id="rentalsDealerAssetIdInput" placeholder="Enter Asset ID/Serial Number" maxlength="100" />
+</div>
+{% endunless %}
+
+{% unless productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- =====================================================
+     SIS 2.0 DEALER/INTERNAL CONDITIONAL FIELDS
+===================================================== -->
+
+<!-- Impacted CWS ID -->
+<div class="cat-field" id="sis2ImpactedCwsFieldWrapper">
+  <label for="sis2ImpactedCwsInput">Impacted CWS ID</label>
+  <input type="text" id="sis2ImpactedCwsInput" placeholder="Enter Impacted CWS ID" maxlength="100" />
+</div>
+
+<!-- URL -->
+<div class="cat-field" id="sis2UrlFieldWrapper">
+  <label for="sis2UrlInput">URL</label>
+  <input type="text" id="sis2UrlInput" placeholder="Enter URL" maxlength="500" />
+</div>
+
+<!-- Date & Time Issue Occurred -->
+<div class="cat-field" id="sis2DateTimeFieldWrapper">
+  <label for="sis2DateTimeInput">Date &amp; Time Issue Occurred</label>
+  <input type="datetime-local" id="sis2DateTimeInput" />
+</div>
+
+<!-- Time Zone -->
+<div class="cat-field" id="sis2TimeZoneFieldWrapper">
+  <label for="sis2TimeZoneInput">Time Zone</label>
+  <input type="text" id="sis2TimeZoneInput" placeholder="e.g. EST, CST" maxlength="50" />
+</div>
+
+<!-- Is the issue affecting multiple users? -->
+<div class="cat-field" id="sis2MultipleUsersFieldWrapper">
+  <label>Is the issue affecting multiple users?</label>
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input type="radio" name="sis2MultipleUsers" id="sis2MultipleUsersYes" value="Yes" />
+      <span>Yes</span>
+    </label>
+    <label class="cat-radio-option">
+      <input type="radio" name="sis2MultipleUsers" id="sis2MultipleUsersNo" value="No" />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Sales Model -->
+<div class="cat-field" id="sis2SalesModelFieldWrapper">
+  <label for="sis2SalesModelInput">Sales Model</label>
+  <input type="text" id="sis2SalesModelInput" placeholder="Enter Sales Model" maxlength="100" />
+</div>
+
+<!-- Asset ID/Serial Number -->
+<div class="cat-field" id="sis2AssetIdFieldWrapper">
+  <label for="sis2AssetIdInput">Asset ID/Serial Number</label>
+  <input type="text" id="sis2AssetIdInput" placeholder="Enter Asset ID/Serial Number" maxlength="100" />
+</div>
+
+<!-- Media Type/Media Number -->
+<div class="cat-field" id="sis2MediaTypeFieldWrapper">
+  <label for="sis2MediaTypeInput">Media Type/Media Number</label>
+  <input type="text" id="sis2MediaTypeInput" placeholder="Enter Media Type/Media Number" maxlength="100" />
+</div>
+
+<!-- What best describes your issue? -->
+<div class="cat-field" id="sis2DescribesIssueFieldWrapper">
+  <label for="sis2DescribesIssueInput">What best describes your issue?</label>
+
+  <div class="lookup-wrapper">
+    <input type="text" id="sis2DescribesIssueInput" class="lookup-input" placeholder="Select Option" autocomplete="off" />
+
+    <div class="lookup-arrow sis2-describes-issue-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div class="lookup-results" id="sis2DescribesIssueResults"></div>
+
+    <select id="sis2DescribesIssueSelect" style="display:none;">
+      <option value="">Select Option</option>
+      <option value="Parts Book Issue">Parts Book Issue</option>
+      <option value="Parts Inquiry">Parts Inquiry</option>
+      <option value="Service Documentation Error">Service Documentation Error</option>
+      <option value="System Issue">System Issue</option>
+    </select>
+  </div>
+</div>
+
+<!-- Dealer Code -->
+<div class="cat-field" id="sis2DealerCodeFieldWrapper">
+  <label for="sis2DealerCodeInput">Dealer Code</label>
+  <input type="text" id="sis2DealerCodeInput" placeholder="Enter Dealer Code" maxlength="50" />
+</div>
+{% endunless %}
+
+{% if productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- =====================================================
+     SIS 2.0 CUSTOMER CONDITIONAL FIELDS
+     (URL, Date/Time, Time Zone, Asset ID reuse the sis2... wrappers)
+===================================================== -->
+
+<!-- Username -->
+<div class="cat-field" id="sis2CustUsernameFieldWrapper">
+  <label for="sis2CustUsernameInput">Username</label>
+  <input type="text" id="sis2CustUsernameInput" placeholder="Enter Username" maxlength="100" />
+</div>
+
+<!-- Part Number -->
+<div class="cat-field" id="sis2CustPartNumberFieldWrapper">
+  <label for="sis2CustPartNumberInput">Part Number</label>
+  <input type="text" id="sis2CustPartNumberInput" placeholder="Enter Part Number" maxlength="100" />
+</div>
+
+<!-- URL / Date & Time / Time Zone / Asset ID for Customer -->
+<div class="cat-field" id="sis2CustUrlFieldWrapper">
+  <label for="sis2CustUrlInput">URL</label>
+  <input type="text" id="sis2CustUrlInput" placeholder="Enter URL" maxlength="500" />
+</div>
+
+<div class="cat-field" id="sis2CustDateTimeFieldWrapper">
+  <label for="sis2CustDateTimeInput">Date &amp; Time Issue Occurred</label>
+  <input type="datetime-local" id="sis2CustDateTimeInput" />
+</div>
+
+<div class="cat-field" id="sis2CustTimeZoneFieldWrapper">
+  <label for="sis2CustTimeZoneInput">Time Zone</label>
+  <input type="text" id="sis2CustTimeZoneInput" placeholder="e.g. EST, CST" maxlength="50" />
+</div>
+
+<div class="cat-field" id="sis2CustAssetIdFieldWrapper">
+  <label for="sis2CustAssetIdInput">Asset ID/Serial Number</label>
+  <input type="text" id="sis2CustAssetIdInput" placeholder="Enter Asset ID/Serial Number" maxlength="100" />
+</div>
+{% endif %}
+
+{% unless productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- =====================================================
+     CAT REMOTE FLEET VISION - CONDITIONAL FIELDS (Dealer/Internal)
+===================================================== -->
+
+<!-- Asset ID/Serial Number -->
+<div class="cat-field" id="rfvAssetIdFieldWrapper">
+  <label for="rfvAssetIdInput">Asset ID/Serial Number</label>
+  <input type="text" id="rfvAssetIdInput" placeholder="Enter Asset ID/Serial Number" maxlength="500" />
+</div>
+
+<!-- Product Link Device Model -->
+<div class="cat-field" id="rfvDeviceModelFieldWrapper">
+  <label for="rfvDeviceModelInput">Product Link Device Model</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="rfvDeviceModelInput" class="lookup-input" placeholder="Select Device Model" autocomplete="off" />
+    <div class="lookup-arrow rfv-device-model-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="rfvDeviceModelResults"></div>
+    <select id="rfvDeviceModelSelect" style="display:none;">
+      <option value="">Select Device Model</option>
+    </select>
+  </div>
+</div>
+
+<!-- Product Link Device Serial Number -->
+<div class="cat-field" id="rfvDeviceSerialFieldWrapper">
+  <label for="rfvDeviceSerialInput">Product Link Device Serial Number</label>
+  <input type="text" id="rfvDeviceSerialInput" placeholder="Enter Product Link Device Serial Number" maxlength="100" />
+</div>
+
+<!-- What best describes your issue? -->
+<div class="cat-field" id="rfvBestDescribesFieldWrapper">
+  <label for="rfvBestDescribesInput">What best describes your issue?</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="rfvBestDescribesInput" class="lookup-input" placeholder="Select Option" autocomplete="off" />
+    <div class="lookup-arrow rfv-best-describes-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="rfvBestDescribesResults"></div>
+    <select id="rfvBestDescribesSelect" style="display:none;">
+      <option value="">Select Option</option>
+      <option value="Configuration Files">Configuration Files</option>
+      <option value="Datapoint Validation">Datapoint Validation</option>
+      <option value="Remove Asset from RFV">Remove Asset from RFV</option>
+      <option value="Software Update">Software Update</option>
+      <option value="Enable/Disable Asset">Enable/Disable Asset</option>
+      <option value="Update Unit Data">Update Unit Data</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+</div>
+
+<!-- Alarm Name -->
+<div class="cat-field" id="rfvAlarmNameFieldWrapper">
+  <label for="rfvAlarmNameInput">Alarm Name</label>
+  <input type="text" id="rfvAlarmNameInput" placeholder="Enter Alarm Name" maxlength="200" />
+</div>
+
+<!-- Application (value = number from the Application Values tab) -->
+<div class="cat-field" id="rfvApplicationFieldWrapper">
+  <label for="rfvApplicationInput">Application</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="rfvApplicationInput" class="lookup-input" placeholder="Select Application" autocomplete="off" />
+    <div class="lookup-arrow rfv-application-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="rfvApplicationResults"></div>
+    <select id="rfvApplicationSelect" style="display:none;">
+      <option value="">Select Application</option>
+      <option value="23">Cargo</option>
+      <option value="14">Demand Generation</option>
+      <option value="20">Dredge</option>
+      <option value="24">Ferry</option>
+      <option value="10">Fire Pump</option>
+      <option value="18">Fishing</option>
+      <option value="1">Gas Compression</option>
+      <option value="22">Government</option>
+      <option value="12">Industrial Power</option>
+      <option value="19">Inland Waterways</option>
+      <option value="3">Land Drilling &amp; Gas</option>
+      <option value="13">Misc</option>
+      <option value="7">Offshore Drilling</option>
+      <option value="17">Offshore Service Vessel</option>
+      <option value="11">Perkins</option>
+      <option value="8">Pleasure Craft</option>
+      <option value="6">Power Generation</option>
+      <option value="16">Rail</option>
+      <option value="9">Tug</option>
+      <option value="15">Waste Water</option>
+      <option value="2">Well Services</option>
+    </select>
+  </div>
+</div>
+
+<!-- Units of Measure (Imperial is stored as "Imperial 2" per the sheet note) -->
+<div class="cat-field" id="rfvUnitsFieldWrapper">
+  <label for="rfvUnitsInput">Units of Measure</label>
+  <div class="lookup-wrapper">
+    <input type="text" id="rfvUnitsInput" class="lookup-input" placeholder="Select Units of Measure" autocomplete="off" />
+    <div class="lookup-arrow rfv-units-arrow"><i class="fa fa-chevron-down"></i></div>
+    <div class="lookup-results" id="rfvUnitsResults"></div>
+    <select id="rfvUnitsSelect" style="display:none;">
+      <option value="">Select Units of Measure</option>
+      <option value="Imperial 2">Imperial</option>
+      <option value="Metric">Metric</option>
+    </select>
+  </div>
+</div>
+
+<!-- Customer Site(s) -->
+<div class="cat-field" id="rfvCustomerSitesFieldWrapper">
+  <label for="rfvCustomerSitesInput">Customer Site(s)</label>
+  <input type="text" id="rfvCustomerSitesInput" placeholder="Enter Customer Site(s)" maxlength="500" />
+</div>
+{% endunless %}
+
+<!-- =====================================================
+     PARTS.CAT.COM REDIRECT MODALS
+===================================================== -->
+
+<!-- Dealer/Internal: Parts Identification redirect -->
+<div
+  class="cat-redirect-overlay"
+  id="pccPartIdOverlay"
+>
+  <div class="cat-redirect-modal">
+    <p class="cat-redirect-text">
+      You are being redirected to the DSN for assistance with Parts Identification.
+    </p>
+
+    <button
+      type="button"
+      class="cat-redirect-ok"
+      id="pccPartIdOk"
+    >
+      Ok
+    </button>
+  </div>
+</div>
+
+<!-- Customer: Dealer Locator redirect -->
+<div
+  class="cat-redirect-overlay"
+  id="pccCustDealerLocatorOverlay"
+>
+  <div class="cat-redirect-modal">
+    <p class="cat-redirect-text">
+      You are being redirected to the Cat Dealer Locator.
+    </p>
+
+    <button
+      type="button"
+      class="cat-redirect-ok"
+      id="pccCustDealerLocatorOk"
+    >
+      Ok
+    </button>
+  </div>
+</div>
+
+<!-- Customer: Parts.Cat.Com Manuals assistance -->
+<div
+  class="cat-redirect-overlay"
+  id="pccCustManualsOverlay"
+>
+  <div class="cat-redirect-modal">
+    <p class="cat-redirect-text">
+      Please click on this link for assistance with manuals.
+    </p>
+
+    <button
+      type="button"
+      class="cat-redirect-ok"
+      id="pccCustManualsOk"
+    >
+      Ok
+    </button>
+  </div>
+</div>
+
+<!-- SIS 2.0 - Access/Administration notice modal -->
+<div class="cat-redirect-overlay" id="sis2AccessAdminOverlay">
+<div class="cat-redirect-modal">
+  <p class="cat-redirect-text">If you're not the SIS Administrator, please contact the SIS Administrator at your dealer before entering a support ticket. If you are the SIS Administrator - Click Okay.</p>
+  <button type="button" class="cat-redirect-ok" id="sis2AccessAdminOk">Ok</button>
+</div>
+</div>
+
+<!-- SIS 2.0 - Part Specific Information redirect modal -->
+<div class="cat-redirect-overlay" id="sis2PartSpecificOverlay">
+<div class="cat-redirect-modal">
+  <p class="cat-redirect-text">You are being redirected to the DSN for assistance.</p>
+  <button type="button" class="cat-redirect-ok" id="sis2PartSpecificOk">Ok</button>
+</div>
+</div>
+
+<!-- Cat Rentals - Owned machine redirect modal -->
+<div class="cat-redirect-overlay" id="rentalsOwnedRedirectOverlay">
+<div class="cat-redirect-modal">
+  <p class="cat-redirect-text">You are being redirected to the Cat Dealer Locator.</p>
+  <button type="button" class="cat-redirect-ok" id="rentalsOwnedRedirectOk">Ok</button>
+</div>
+</div>
+
+{% unless productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- =====================================================
+     CAT CENTRAL DEALER/INTERNAL CONDITIONAL FIELDS
+===================================================== -->
+
+<!-- What environment is the issue occurring in? -->
+<div class="cat-field" id="centralEnvironmentFieldWrapper">
+  <label for="centralEnvironmentSelect">What environment is the issue occurring in?</label>
+  <select id="centralEnvironmentSelect">
+    <option value="">Select Option</option>
+    <option value="100000000">QA</option>
+    <option value="100000001">Production</option>
+    <option value="100000002">Both QA &amp; Production</option>
+  </select>
+</div>
+
+<!-- Date & Time Issue Occurred -->
+<div class="cat-field" id="centralDateTimeFieldWrapper">
+  <label for="centralDateTimeInput">Date &amp; Time Issue Occurred</label>
+  <input type="datetime-local" id="centralDateTimeInput" />
+</div>
+
+<!-- Time Zone -->
+<div class="cat-field" id="centralTimeZoneFieldWrapper">
+  <label for="centralTimeZoneInput">Time Zone</label>
+  <input type="text" id="centralTimeZoneInput" placeholder="e.g. EST, CST" maxlength="50" />
+</div>
+
+<!-- Have there been any recent changes to infrastructure/software at your location? -->
+<div class="cat-field" id="centralInfraChangesFieldWrapper">
+  <label>Have there been any recent changes to infrastructure/software at your location?</label>
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input type="radio" name="centralInfraChanges" id="centralInfraChangesYes" value="Yes" />
+      <span>Yes</span>
+    </label>
+    <label class="cat-radio-option">
+      <input type="radio" name="centralInfraChanges" id="centralInfraChangesNo" value="No" />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- What is the app version? -->
+<div class="cat-field" id="centralAppVersionFieldWrapper" style="display:none !important;">
+  <label for="centralAppVersionInput">What is the app version?</label>
+  <input type="text" id="centralAppVersionInput" placeholder="e.g. 4.4" maxlength="50" />
+</div>
+
+<!-- Customer Email Address -->
+<div class="cat-field" id="centralCustomerEmailFieldWrapper" style="display:none !important;">
+  <label for="centralCustomerEmailInput">Customer Email Address</label>
+  <input type="email" id="centralCustomerEmailInput" placeholder="Enter Customer Email Address" maxlength="150" />
+</div>
+
+<!-- Customer CWS ID -->
+<div class="cat-field" id="centralCustomerCwsIdFieldWrapper">
+  <label for="centralCustomerCwsIdInput">Customer CWS ID</label>
+  <input type="text" id="centralCustomerCwsIdInput" placeholder="Enter Customer CWS ID" maxlength="100" />
+</div>
+
+<!-- Is the issue affecting multiple users? -->
+<div class="cat-field" id="centralMultipleUsersFieldWrapper">
+  <label>Is the issue affecting multiple users?</label>
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input type="radio" name="centralMultipleUsers" id="centralMultipleUsersYes" value="Yes" />
+      <span>Yes</span>
+    </label>
+    <label class="cat-radio-option">
+      <input type="radio" name="centralMultipleUsers" id="centralMultipleUsersNo" value="No" />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+{% endunless %}
+
+{% if productPersona == 'Customer' or productPersona == 'Guest' %}
+<!-- =====================================================
+     CAT CENTRAL CUSTOMER CONDITIONAL FIELDS
+===================================================== -->
+
+<!-- Asset ID/Serial Number -->
+<div class="cat-field" id="centralCustomerAssetIdFieldWrapper">
+  <label for="centralCustomerAssetIdInput">Asset ID/Serial Number</label>
+  <input type="text" id="centralCustomerAssetIdInput" placeholder="Enter Asset ID/Serial Number" maxlength="100" />
+</div>
+
+<!-- Order Number -->
+<div class="cat-field" id="centralCustomerOrderNumberFieldWrapper">
+  <label for="centralCustomerOrderNumberInput">Order Number</label>
+  <input type="text" id="centralCustomerOrderNumberInput" placeholder="Enter Order Number" maxlength="100" />
+</div>
+{% endif %}
+
+
+<!-- =====================================================
+     DIGITAL AUTHORIZATION FIELDS
+===================================================== -->
+
+<!-- CCID - always shown for Digital Authorization -->
+<div class="cat-field" id="digitalAuthCcidFieldWrapper">
+  <label for="digitalAuthCcidInput">
+    CCID
+  </label>
+
+  <input
+    type="text"
+    id="digitalAuthCcidInput"
+    name="cat_digitalauthccid"
+    maxlength="100"
+  />
+</div>
+
+<!-- What data is incorrect? -->
+<div class="cat-field" id="digitalAuthDataPointFieldWrapper">
+  <label for="digitalAuthDataPointInput">
+    What data is incorrect?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="digitalAuthDataPointInput"
+      class="lookup-input"
+      placeholder="Select Data Point"
+    />
+
+    <div class="lookup-arrow digital-auth-datapoint-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="digitalAuthDataPointResults"
+    ></div>
+
+    <select
+      id="digitalAuthDataPointSelect"
+      name="cat_datapoint"
+      style="display:none;"
+    >
+      <option value="">Select Data Point</option>
+      <option value="100000000">Asset Operation</option>
+      <option value="100000001">Fault Codes</option>
+      <option value="100000002">Fluid Analysis</option>
+      <option value="100000003">Geofences</option>
+      <option value="100000004">Hours</option>
+      <option value="100000005">Location</option>
+      <option value="100000006">Utilization</option>
+      <option value="100000007">Other</option>
+    </select>
+  </div>
+</div>
+
+<!-- DSD - only shown for STU - Sales to Users -->
+<div class="cat-field" id="stuDsdFieldWrapper">
+  <label for="stuDsdInput">DSD</label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="stuDsdInput"
+      class="lookup-input"
+      placeholder="Select DSD"
+    />
+
+    <div class="lookup-arrow stu-dsd-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="stuDsdResults"
+    ></div>
+
+    <select
+      id="stuDsdSelect"
+      name="cat_studsd"
+      style="display:none;"
+    >
+      <option value="">Select DSD</option>
+      <option value="ADSD">ADSD</option>
+      <option value="APD">APD</option>
+      <option value="EAME">EAME</option>
+    </select>
+  </div>
+</div>
+
+<!-- Vertical - only shown for STU - Sales to Users -->
+<div class="cat-field" id="stuVerticalFieldWrapper">
+  <label>
+    Vertical
+  </label>
+
+  <input
+    type="hidden"
+    id="stuVerticalInput"
+    name="cat_stuvertical"
+  />
+
+  <div class="cat-checkbox-group">
+    <label class="cat-checkbox-option">
+      <input type="checkbox" name="stuVertical" value="CI" />
+      <span>CI</span>
+    </label>
+
+    <label class="cat-checkbox-option">
+      <input type="checkbox" name="stuVertical" value="E&amp;T" />
+      <span>E&amp;T</span>
+    </label>
+
+    <label class="cat-checkbox-option">
+      <input type="checkbox" name="stuVertical" value="RI" />
+      <span>RI</span>
+    </label>
+
+    <label class="cat-checkbox-option">
+      <input type="checkbox" name="stuVertical" value="N/A" />
+      <span>N/A</span>
+    </label>
+  </div>
+</div>
+
+<!-- URL of BI Product — only shown for DNA, OLGA, and STU -->
+<div class="cat-field" id="biProductUrlFieldWrapper">
+  <label for="biProductUrlInput">
+    URL of BI Product
+
+    <span class="cat-description-help-wrapper" data-cat-field-help>
+      <button
+        type="button"
+        id="biProductUrlHelpButton"
+        class="cat-description-help-button"
+        aria-label="Help for URL of BI Product"
+        aria-controls="biProductUrlHelpText"
+        aria-expanded="false"
+      >
+        <img
+          src="info-filled.png"
+          class="cat-description-help-icon"
+          alt=""
+          aria-hidden="true"
+          style="width:14px; height:14px; display:block;"
+        />
+      </button>
+
+      <span
+        id="biProductUrlHelpText"
+        class="cat-description-help-text"
+        role="tooltip"
+      >
+        If your request is related to a BI Product, please provide the URL or product name
+      </span>
+    </span>
+  </label>
+
+  <input
+    type="text"
+    id="biProductUrlInput"
+    name="cat_biproducturl"
+    aria-describedby="biProductUrlHelpText"
+  />
+</div>
+
+<!-- What environment is the issue occurring in? — only shown for Cat Integrated Procurement -->
+  <div class="cat-field" id="environmentFieldWrapper">
+    <label for="environmentInput">What environment is the issue occurring in?</label>
+
+    <div class="lookup-wrapper">
+      <input type="text" id="environmentInput" class="lookup-input" placeholder="Select Option">
+      <div class="lookup-arrow environment-arrow"><i class="fa fa-chevron-down"></i></div>
+
+      <div class="lookup-results" id="environmentResults"></div>
+
+      <select id="environmentSelect" name="cat_environment" style="display:none;">
+          <option value="">Select Option</option>
+          <option value="QA">QA</option>
+          <option value="Production">Production</option>
+          <option value="QA & Production">QA & Production</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- What is the transaction type? -->
+<div class="cat-field" id="ipTransactionTypeFieldWrapper">
+  <label for="ipTransactionTypeInput">
+    What is the transaction type?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="ipTransactionTypeInput"
+      class="lookup-input"
+      placeholder="Select Transaction Type"
+    />
+
+    <div class="lookup-arrow ip-transaction-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="ipTransactionTypeResults"
+    ></div>
+
+    <select
+      id="ipTransactionTypeSelect"
+      name="cat_iptransactiontype"
+      style="display:none;"
+    >
+      <option value="">Select Transaction Type</option>
+      <option value="Advanced Ship Notice">Advanced Ship Notice</option>
+      <option value="Change Order">Change Order</option>
+      <option value="Direct Order">Direct Order</option>
+      <option value="Invoice">Invoice</option>
+      <option value="Part Update">Part Update</option>
+      <option value="Price & Availability">Price &amp; Availability</option>
+      <option value="Supplier Hosted Order">Supplier Hosted Order</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+</div>
+
+<!-- Is the issue affecting multiple customers? -->
+<div class="cat-field" id="ipMultipleCustomersFieldWrapper">
+  <label>
+    Is the issue affecting multiple customers?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="ipMultipleCustomers"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="ipMultipleCustomers"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- IP Customer Name — only shown for Cat Integrated Procurement -->
+  <div class="cat-field" id="ipCustomerFieldWrapper">
+    <label for="ipCustomerInput">
+  IP Customer Name
+  <span class="cat-description-help-wrapper" data-cat-field-help>
+    <button
+      type="button"
+      id="ipCustomerHelpButton"
+      class="cat-description-help-button"
+      aria-label="Help for IP Customer Name"
+      aria-controls="ipCustomerHelpText"
+      aria-expanded="false"
+    >
+     <img
+  src="info-filled.png"
+  class="cat-description-help-icon"
+  alt=""
+  aria-hidden="true"
+  style="width:14px; height:14px; display:block;"
+/>
+    </button>
+    <span
+      id="ipCustomerHelpText"
+      class="cat-description-help-text"
+      role="tooltip"
+    >
+      If multiple, include example of a customer impacted
+    </span>
+  </span>
+</label>
+    <input type="text" id="ipCustomerInput" name="cat_ipcustomername" aria-describedby="ipCustomerHelpText">
+
+  </div>
+
+<!-- IP Profile (FMI) — only shown for Cat Integrated Procurement -->
+  <div class="cat-field" id="ipProfileFieldWrapper">
+    <label for="ipProfileInput">
+  IP Profile (FMI)
+  <span class="cat-description-help-wrapper" data-cat-field-help>
+    <button
+      type="button"
+      id="ipProfileHelpButton"
+      class="cat-description-help-button"
+      aria-label="Help for IP Profile FMI"
+      aria-controls="ipProfileHelpText"
+      aria-expanded="false"
+    >
+      <img
+  src="info-filled.png"
+  class="cat-description-help-icon"
+  alt=""
+  aria-hidden="true"
+  style="width:14px; height:14px; display:block;"
+/>
+    </button>
+    <span
+      id="ipProfileHelpText"
+      class="cat-description-help-text"
+      role="tooltip"
+    >
+      If multiple, include example of a customer impacted
+    </span>
+  </span>
+</label>
+    <input type="text" id="ipProfileInput" name="cat_ipprofilefmi" aria-describedby="ipProfileHelpText">
+  </div>
+
+<!-- Impacted CWS ID — only shown for Cat Integrated Procurement -->
+<div class="cat-field" id="impactedCwsFieldWrapper">
+  <label for="impactedCwsInput">
+    Impacted CWS ID
+
+    <span class="cat-description-help-wrapper" data-cat-field-help>
+      <button
+        type="button"
+        id="impactedCwsHelpButton"
+        class="cat-description-help-button"
+        aria-label="Help for Impacted CWS ID"
+        aria-controls="impactedCwsHelpText"
+        aria-expanded="false"
+      >
+        <img
+          src="info-filled.png"
+          class="cat-description-help-icon"
+          alt=""
+          aria-hidden="true"
+          style="width:14px; height:14px; display:block;"
+        />
+      </button>
+
+      <span
+        id="impactedCwsHelpText"
+        class="cat-description-help-text"
+        role="tooltip"
+      >
+        If multiple, include example of a customer impacted
+      </span>
+    </span>
+  </label>
+
+  <input
+    type="text"
+    id="impactedCwsInput"
+    name="cat_impactedcwsid"
+    aria-describedby="impactedCwsHelpText"
+  />
+</div>
+
+
+
+
+<!-- Impacted DCN(s) — only shown for Cat Integrated Procurement -->
+  <div class="cat-field" id="impactedDcnFieldWrapper">
+    <label for="impactedDcnInput">
+  Impacted DCN(s)
+  <span class="cat-description-help-wrapper" data-cat-field-help>
+    <button
+      type="button"
+      id="impactedDcnHelpButton"
+      class="cat-description-help-button"
+      aria-label="Help for Impacted DCNs"
+      aria-controls="impactedDcnHelpText"
+      aria-expanded="false"
+    >
+      <img
+  src="info-filled.png"
+  class="cat-description-help-icon"
+  alt=""
+  aria-hidden="true"
+  style="width:14px; height:14px; display:block;"
+/>
+    </button>
+    <span
+      id="impactedDcnHelpText"
+      class="cat-description-help-text"
+      role="tooltip"
+    >
+      If impacting everyone, type in "everyone" and provide one or two examples. If not applicable, put N/A
+    </span>
+  </span>
+</label>
+    <input type="text" id="impactedDcnInput" name="cat_impacteddcns" aria-describedby="impactedDcnHelpText">
+  </div>
+
+<!-- Impacted Username — only shown for Cat Integrated Procurement -->
+  <div class="cat-field" id="impactedUsernameFieldWrapper">
+    <label for="impactedUsernameInput">
+  Impacted Username
+  <span class="cat-description-help-wrapper" data-cat-field-help>
+    <button
+      type="button"
+      id="impactedUsernameHelpButton"
+      class="cat-description-help-button"
+      aria-label="Help for Impacted Username"
+      aria-controls="impactedUsernameHelpText"
+      aria-expanded="false"
+    >
+      <img
+  src="info-filled.png"
+  class="cat-description-help-icon"
+  alt=""
+  aria-hidden="true"
+  style="width:14px; height:14px; display:block;"
+/>
+    </button>
+    <span
+      id="impactedUsernameHelpText"
+      class="cat-description-help-text"
+      role="tooltip"
+    >
+      If multiple, include example of a customer impacted
+    </span>
+  </span>
+</label>
+    <input type="text" id="impactedUsernameInput" name="cat_impactedusername" aria-describedby="impactedUsernameHelpText">
+  </div>
+
+<!-- Date and Time issue occurred -->
+<div class="cat-field" id="ipIssueDateTimeFieldWrapper">
+  <label for="ipIssueDateTimeInput">
+    Date and Time issue occurred
+  </label>
+
+  <input
+    type="datetime-local"
+    id="ipIssueDateTimeInput"
+    name="cat_ipissuedatetime"
+  />
+</div>
+
+<!-- Is the issue intermittent? -->
+<div class="cat-field" id="ipIntermittentFieldWrapper">
+  <label>
+    Is the issue intermittent?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="ipIntermittent"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="ipIntermittent"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Is this part number specific? -->
+<div class="cat-field" id="ipPartNumberSpecificFieldWrapper">
+  <label>
+    Is this part number specific?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="ipPartNumberSpecific"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="ipPartNumberSpecific"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Part Number -->
+<div class="cat-field" id="ipPartNumberFieldWrapper">
+  <label for="ipPartNumberInput">
+    Part Number
+  </label>
+
+  <input
+    type="text"
+    id="ipPartNumberInput"
+    name="cat_ippartnumber"
+    maxlength="250"
+  />
+</div>
+
+<!-- Is the IP Customer experiencing any other network issues? -->
+<div class="cat-field" id="ipOtherNetworkIssuesFieldWrapper">
+  <label>
+    Is the IP Customer experiencing any other network issues?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="ipOtherNetworkIssues"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="ipOtherNetworkIssues"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- What is the invoice number? -->
+<div class="cat-field" id="ipInvoiceNumberFieldWrapper">
+  <label for="ipInvoiceNumberInput">
+    What is the invoice number?
+  </label>
+
+  <input
+    type="text"
+    id="ipInvoiceNumberInput"
+    name="cat_ipinvoicenumber"
+    maxlength="250"
+  />
+</div>
+
+<!-- Dealer Collaboration Community fields -->
+
+<!-- Which Community? -->
+<div class="cat-field" id="dealerCommunityFieldWrapper">
+  <label for="dealerCommunityInput">
+    Which Community?
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="dealerCommunityInput"
+      class="lookup-input"
+      placeholder="Select Community"
+    />
+
+    <div class="lookup-arrow dealer-community-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="dealerCommunityResults"
+    ></div>
+
+    <select
+      id="dealerCommunitySelect"
+      name="cat_dealercommunity"
+      style="display:none;"
+    >
+     <option value="">Select Community</option>
+
+{% for community in dealerCommunityProducts.results.entities %}
+  {% assign communityDisplayName = community.name | replace: ' - Dealer Collaboration Community', '' %}
+  <option value="{{ community.productid }}">
+    {{ communityDisplayName | escape }}
+  </option>
+{% endfor %}
+    </select>
+  </div>
+</div>
+
+<!-- Are you submitting a case on behalf of another user? -->
+<div class="cat-field" id="dealerOnBehalfFieldWrapper">
+  <label>
+    Are you submitting a case on behalf of another user?
+  </label>
+
+  <div class="cat-radio-group">
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="dealerOnBehalf"
+        value="Yes"
+      />
+      <span>Yes</span>
+    </label>
+
+    <label class="cat-radio-option">
+      <input
+        type="radio"
+        name="dealerOnBehalf"
+        value="No"
+      />
+      <span>No</span>
+    </label>
+  </div>
+</div>
+
+<!-- Requested For -->
+<div class="cat-field" id="dealerRequestedForFieldWrapper">
+  <label for="dealerRequestedForInput">
+    Requested For
+  </label>
+
+  <input
+    type="text"
+    id="dealerRequestedForInput"
+    name="cat_dealerrequestedfor"
+    maxlength="250"
+  />
+</div>
+
+<!-- Job Role -->
+<div class="cat-field" id="dealerJobRoleFieldWrapper">
+  <label for="dealerJobRoleInput">
+    Job Role
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="dealerJobRoleInput"
+      class="lookup-input"
+      placeholder="Select Job Role"
+    />
+
+    <div class="lookup-arrow dealer-job-role-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="dealerJobRoleResults"
+    ></div>
+
+    <select
+      id="dealerJobRoleSelect"
+      name="cat_dealerjobrole"
+      style="display:none;"
+    >
+      <option value="">Select Job Role</option>
+      <option value="Account Development Rep">
+        Account Development Rep
+      </option>
+      <option value="Contact Center Supervisor/Operator">
+        Contact Center Supervisor/Operator
+      </option>
+      <option value="CRM Data Analyst">
+        CRM Data Analyst
+      </option>
+      <option value="CRM Manager/Coordinator/Specialist">
+        CRM Manager/Coordinator/Specialist
+      </option>
+      <option value="CX Manager">
+        CX Manager
+      </option>
+      <option value="Digital Marketing Manager">
+        Digital Marketing Manager
+      </option>
+      <option value="Inside Sales Rep">
+        Inside Sales Rep
+      </option>
+      <option value="Lead Coordinator/Analyst/Manager">
+        Lead Coordinator/Analyst/Manager
+      </option>
+      <option value="Marketing/Sales Manager/Director/Supervisor">
+        Marketing/Sales Manager/Director/Supervisor
+      </option>
+      <option value="Strategic/Power System Marketing Manager">
+        Strategic/Power System Marketing Manager
+      </option>
+      <option value="Other">
+        Other
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- Additional Dealer Code -->
+<div class="cat-field" id="dealerAdditionalCodeFieldWrapper">
+  <label for="dealerAdditionalCodeInput">
+    Additional Dealer Code
+  </label>
+
+ <input
+  type="text"
+  id="dealerAdditionalCodeInput"
+  name="cat_dealercode"
+  maxlength="100"
+  placeholder="Optional"
+/>
+</div>
+
+<!-- Access Required -->
+<div class="cat-field" id="dealerAccessRequiredFieldWrapper">
+  <label for="dealerAccessRequiredInput">
+    Access Required
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="dealerAccessRequiredInput"
+      class="lookup-input"
+      placeholder="Select Access Required"
+    />
+
+    <div class="lookup-arrow dealer-access-required-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div
+      class="lookup-results"
+      id="dealerAccessRequiredResults"
+    ></div>
+
+    <select
+      id="dealerAccessRequiredSelect"
+      name="cat_dealeraccessrequired"
+      style="display:none;"
+    >
+      <option value="">Select Access Required</option>
+      <option value="Event Management">
+        Event Management
+      </option>
+      <option value="Collaborative Marketing">
+        Collaborative Marketing
+      </option>
+      <option value="Conquest Campaigns">
+        Conquest Campaigns
+      </option>
+    </select>
+  </div>
+</div>
+
+<!-- User First Name -->
+<div class="cat-field" id="dealerUserFirstNameFieldWrapper">
+  <label for="dealerUserFirstNameInput">
+    User First Name
+  </label>
+
+  <input
+    type="text"
+    id="dealerUserFirstNameInput"
+    name="cat_dealeruserfirstname"
+    maxlength="100"
+  />
+</div>
+
+<!-- User Last Name -->
+<div class="cat-field" id="dealerUserLastNameFieldWrapper">
+  <label for="dealerUserLastNameInput">
+    User Last Name
+  </label>
+
+  <input
+    type="text"
+    id="dealerUserLastNameInput"
+    name="cat_dealeruserlastname"
+    maxlength="100"
+  />
+</div>
+
+<!-- User Email Address -->
+<div class="cat-field" id="dealerUserEmailFieldWrapper">
+  <label for="dealerUserEmailInput">
+    User Email Address
+  </label>
+
+  <input
+    type="email"
+    id="dealerUserEmailInput"
+    name="cat_dealeruseremail"
+    maxlength="250"
+  />
+</div>
+
+<!-- User CWS ID -->
+<div class="cat-field" id="dealerUserCwsIdFieldWrapper">
+  <label for="dealerUserCwsIdInput">
+    User CWS ID
+  </label>
+
+  <input
+    type="text"
+    id="dealerUserCwsIdInput"
+    name="cat_dealerusercwsid"
+    maxlength="100"
+  />
+</div>
+
+<!-- User Country (Standard ISO country list) -->
+<div class="cat-field" id="dealerUserCountryFieldWrapper">
+  <label for="dealerUserCountryInput">
+    User Country
+  </label>
+
+  <div class="lookup-wrapper">
+    <input
+      type="text"
+      id="dealerUserCountryInput"
+      class="lookup-input"
+      placeholder="Select Country"
+      autocomplete="off"
+    />
+
+    <div class="lookup-arrow dealer-user-country-arrow">
+      <i class="fa fa-chevron-down"></i>
+    </div>
+
+    <div class="lookup-results" id="dealerUserCountryResults"></div>
+
+    <select
+      id="dealerUserCountrySelect"
+      name="cat_dealerusercountry"
+      style="display:none;"
+    >
+      <option value="">Select Country</option>
+    </select>
+  </div>
+</div>
+
+<!-- Aftermarket Part Expert Option (only shown when "Parts Expert" is selected above) -->
+  <div class="cat-field" id="aftermarketFieldWrapper">
+    <label for="aftermarketInput">Aftermarket Part Expert Option</label>
+
+    <div class="lookup-wrapper">
+      <input type="text" id="aftermarketInput" class="lookup-input" placeholder="Select Option">
+      <div class="lookup-arrow aftermarket-arrow"><i class="fa fa-chevron-down"></i></div>
+
+      <div class="lookup-results" id="aftermarketResults"></div>
+
+      <select id="aftermarketPartExpert" name="cat_aftermarketpartexpertoption" style="display:none;">
+          <option value="">Select Option</option>
+          <option value="Bucket Expert">Bucket Expert</option>
+          <option value="GET Expert">GET Expert</option>
+          <option value="Undercarriage Expert">Undercarriage Expert</option>
+      </select>
+    </div>
+  </div>
+   
+    <!-- Description -->
+    <div class="cat-field">
+      <label for="description">How can we help? <span class="req">*</span>
+          <span class="cat-description-help-wrapper">
+    <button
+      type="button"
+      id="descriptionHelpButton"
+      class="cat-description-help-button"
+      aria-label="Help for How can we help?"
+      aria-controls="descriptionHelpText"
+      aria-expanded="false"
+    >
+      <img
+        src="info-filled.png"
+        class="cat-description-help-icon"
+        alt=""
+        aria-hidden="true"
+      />
+    </button>
+
+    <span
+      id="descriptionHelpText"
+      class="cat-description-help-text"
+      role="tooltip"
+    >
+      The maximum character limit is 250 characters.
+    </span>
+  </span>
+      <span id="descCounter" aria-hidden="true">0 / 250</span>
+      </label>
+
+    <div class="description-wrapper">
+    <textarea id="description" name="description" rows="5" required aria-describedby="descCounter descWarning"></textarea>
+    
+  </div>
+
+  <!-- <div id="descWarning" role="status" aria-live="polite">You have reached maximum limit of word</div> -->
+  <div id="descWarning" role="status" aria-live="polite">
+    {{ snippets['CAT_Error_MaxWord'] }}
+  </div>      
+    </div>
+
+ <p class="attach-label">
+  Please attach additional files
+
+  <span class="cat-attachment-help-wrapper">
+    <button
+      type="button"
+      id="attachmentHelpButton"
+      class="cat-attachment-help-button"
+      aria-label="Help for file attachments"
+      aria-controls="attachmentHelpText"
+      aria-expanded="false"
+    >
+      <img
+        src="info-filled.png"
+        class="cat-attachment-help-icon"
+        alt=""
+        aria-hidden="true"
+      />
+    </button>
+
+    <span
+  id="attachmentHelpText"
+  class="cat-attachment-help-text"
+  role="tooltip"
+  data-default-help="Please attach any relevant screenshots or supporting files."
+>
+  Please attach any relevant screenshots or supporting files.
+</span>
+  </span>
+</p>
+  
+    <!-- Drag & Drop Attachment Section -->
+<div id="drag-drop-container" class="attachment-zone">
+ 
+    <div id="drop-zone">
+<i class="fa fa-cloud-upload" aria-hidden="true"></i>
+ 
+<p>Drag &amp; Drop files here or
+<span id="browse-link" style="font-weight:600; cursor:pointer; text-decoration:underline;">
+Browse</span>
+</p>
+ 
+<input type="file" id="file-input" multiple accept="{{ snippets['CAT Webform Upload Allow File Type'] | split: ',' | map: 'prepend:.' | join: ',' }}" style="display:none;" />
+</div>
+ 
+    <!-- Selected Files -->
+<div id="file-previews"></div>
+<!--<button id="btn-done" class="cat-btn-done">DONE</button>-->
+
+ 
+    <!-- Validation Errors -->
+<div id="file-errors" style="color:#b20000; margin-top:6px;"></div>
+ 
+    <!-- Upload Button 
+<button type="button" id="btn-upload-all" class="btn btn-primary" style="margin-top:10px; display:none;">
+Upload Attachments
+</button>-->
+ 
+</div>
+
+    <!-- Hidden Fields -->
+    <input type="hidden" name="cat_source" value="CCS Help Center" />
+    <input type="hidden" name="cat_channel" value="Web" />
+
+    <input type="hidden" id="catLanguageValue" value="" />
+<script>document.getElementById("catLanguageValue").value = getCatLanguageLcid();</script>
+
+    <!-- Buttons -->
+    <div class="cat-buttons">
+      <button type="submit" class="cat-btn-primary">Submit</button>
+      <button type="button" class="cat-btn-cancel">Cancel</button>
+    </div>
+
+
+
+  </form>
+</div>
+
+</div>
+
+  
+{% endif %}
+
+<!--Persona filter-->
+    {% assign userPersona = 'Guest' %}
+    
+    {% if user %}
+    {% for role in user.roles %}
+    
+    {% assign roleText = role | string %}
+    
+    {% if roleText contains 'Cat_Internal Customer Persona Role' %}
+    {% assign userPersona = 'Internal' %}
+    {% break %}
+    
+    {% elsif roleText contains 'Cat_Customer Persona Role' %}
+    {% assign userPersona = 'Customer' %}
+    {% break %}
+    
+    {% elsif roleText contains 'Cat_Dealer Persona Role' %}
+    {% assign userPersona = 'Dealer' %}
+    {% break %}
+    
+    {% endif %}
+    
+    {% endfor %}
+    {% endif %}
+    
+    {% assign personaValue = '' %}
+    
+    {% case userPersona %}
+{% when 'Customer' %}
+{% assign personaValue = 100000000 %}
+
+{% when 'Dealer' %}
+{% assign personaValue = 100000001 %}
+
+{% when 'Guest' %}
+{% assign personaValue = 100000002 %}
+
+{% when 'Internal' %}
+{% assign personaValue = 100000003 %}
+{% endcase %}
+<!--Persona filter end-->
+
+
+<!-- needsAnswersFast -->
+{% fetchxml needsAnswersFast %}
+<fetch>
+  <entity name="knowledgearticle">
+    <attribute name="knowledgearticleid" />
+    <attribute name="title" />
+    <attribute name="content" />
+    <attribute name="description" />
+    <attribute name="knowledgearticleviews" />
+    <order attribute="knowledgearticleviews" descending="true" />
+    <filter type="and">
+      <condition attribute="statuscode" operator="eq" value="7" />
+      <condition attribute="cat_persona" operator="contain-values">
+  <value>{{ personaValue }}</value>
+</condition>
+    </filter>
+    <link-entity name="languagelocale" from="languagelocaleid" to="languagelocaleid" alias="kaLang" link-type="inner">
+  <filter type="and">
+    <condition attribute="code" operator="eq" value="{{ website.selected_language.code }}" />
+  </filter>
+</link-entity>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+<!-- RIGHT PANEL: NEEDS ANSWERS FAST -->
+   <div id="needsAnswersFastSection" class="cat-right-panel">
+    <h3>Needs Answers Fast?</h3>
+    <p class="naf-subheading">Find what you need here</p>
+
+    <div id="needsAnswersFastResults">
+        {% for article in needsAnswersFast.results.entities %}
+        <div class="needs-article-item{% if forloop.index > 5 %} needs-article-hidden{% endif %}" data-original-index="{{ forloop.index0 }}" data-views="{{ article.knowledgearticleviews | default: 0 }}" data-search="{{ article.title | strip_html | escape }} {{ article.description | strip_html | escape }} {{ article.content | strip_html | escape }}">
+            <a href="#" class="naf-article-link" data-articleid="{{ article.knowledgearticleid }}">
+            {{ article.title }}
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+<div id="articlePopupOverlay" class="article-popup-overlay" style="display:none;">
+    <div class="article-popup-shell">
+
+        <button type="button" id="articlePopupClose" class="article-popup-close">
+            ×
+        </button>
+
+        <div class="article-popup-modal">
+            <iframe id="articlePopupFrame" class="article-popup-frame"></iframe>
+        </div>
+
+    </div>
+</div>
+
+<div class="cat-urgent"></div>
+
+
+
+  <script>
+    // KA view count
+    $(document).ready(function () {
+      async function createKnowledgeArticleView() {
+        const articleId = new URLSearchParams(window.location.search).get("articleId");
+        console.log("Article Id:", articleId);
+        if (!articleId)
+          return;
+        const storageKey = "ka_view_" + articleId;
+        if (sessionStorage.getItem(storageKey)) {
+          console.log("Already counted");
+          return;
+        }
+        shell.getTokenDeferred().done(async function (token) {
+          try {
+            const response =
+              await fetch("/_api/knowledgearticleviews",
+                {
+                  method: "POST",
+                  headers:
+                  {
+                    "Content-Type": "application/json",
+                    "__RequestVerificationToken": token
+                  },
+                  body:
+                    JSON.stringify({
+                      "knowledgearticleid@odata.bind": `/knowledgearticles(${articleId})`,
+                      "knowledgearticleview": 1,
+                      "viewdate": new Date().toISOString(),
+                      "location": 2,
+                      "cat_persona": window.kaViewPersona
+                    })
+                }
+              );
+            if (response.ok) {
+              sessionStorage.setItem(storageKey, "true");
+              console.log("View created");
+            }
+            else {
+              console.log(await response.text());
+            }
+          }
+          catch (ex) {
+            console.log(ex);
+          }
+        }
+        );
+      }
+      setTimeout(createKnowledgeArticleView, 1500);
+    });
+  </script>
+
